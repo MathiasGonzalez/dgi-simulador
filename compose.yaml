@@ -1,0 +1,18 @@
+services:
+  dgi-simulador:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - datos:/datos
+      # Para cargar emisores, certificados y CAE al arrancar:
+      # - ./semilla.ejemplo.json:/semilla/semilla.json:ro
+    environment:
+      Simulador__DemoraConsultaSegundos: "2"
+      # Simulador__Semilla: /semilla/semilla.json
+      # Simulador__Estricto: "true"
+      # Simulador__UnidadIndexada__2025: "6.4"
+      # Simulador__UrlEntregaCorreo: http://host.docker.internal:8787/cdn-cgi/handler/email
+
+volumes:
+  datos:

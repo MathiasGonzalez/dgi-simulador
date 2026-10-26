@@ -1,0 +1,25 @@
+{
+  "version": "provisoria-1",
+  "fuente": "Armado con los pasos de homologación conocidos (envío de CFE de prueba, reporte diario, consultas, adenda e intercambio). Reemplazar con el instructivo oficial de la DGI (DGI en línea → Gestión CFE → Homologación), que indica los tipos y cantidades que le corresponden a cada empresa.",
+  "casos": [
+    { "id": "eticket", "descripcion": "e-Ticket aceptado", "tipo": "cfe", "cantidad": 1, "tipos": [101] },
+    { "id": "eticket-receptor", "descripcion": "e-Ticket con el receptor identificado", "tipo": "cfe", "cantidad": 1, "tipos": [101], "conReceptor": true },
+    { "id": "eticket-nc", "descripcion": "Nota de crédito de e-Ticket con referencia al e-Ticket", "tipo": "cfe", "cantidad": 1, "tipos": [102], "conReferencia": true },
+    { "id": "eticket-nd", "descripcion": "Nota de débito de e-Ticket", "tipo": "cfe", "cantidad": 1, "tipos": [103], "conReferencia": true },
+    { "id": "efactura", "descripcion": "e-Factura aceptada", "tipo": "cfe", "cantidad": 1, "tipos": [111] },
+    { "id": "efactura-nc", "descripcion": "Nota de crédito de e-Factura con referencia a la e-Factura", "tipo": "cfe", "cantidad": 1, "tipos": [112], "conReferencia": true },
+    { "id": "efactura-nd", "descripcion": "Nota de débito de e-Factura", "tipo": "cfe", "cantidad": 1, "tipos": [113], "conReferencia": true },
+    { "id": "moneda-extranjera", "descripcion": "CFE en moneda extranjera, con tipo de cambio", "tipo": "cfe", "cantidad": 1, "monedaExtranjera": true },
+    { "id": "contingencia", "descripcion": "Comprobante de contingencia (tipo 2xx)", "tipo": "cfe", "cantidad": 1, "contingencia": true },
+    { "id": "efactura-exportacion", "descripcion": "e-Factura de Exportación (si exporta)", "tipo": "cfe", "cantidad": 1, "tipos": [121], "opcional": true },
+    { "id": "eremito", "descripcion": "e-Remito (si traslada mercadería)", "tipo": "cfe", "cantidad": 1, "tipos": [181], "opcional": true },
+    { "id": "eresguardo", "descripcion": "e-Resguardo (si es agente de retención)", "tipo": "cfe", "cantidad": 1, "tipos": [182], "opcional": true },
+    { "id": "cuenta-ajena", "descripcion": "Venta por cuenta ajena (si vende por cuenta de terceros)", "tipo": "cfe", "cantidad": 1, "tipos": [131, 141], "opcional": true },
+    { "id": "eboleta", "descripcion": "e-Boleta de entrada (si compra a no contribuyentes)", "tipo": "cfe", "cantidad": 1, "tipos": [151], "opcional": true },
+    { "id": "reporte-diario", "descripcion": "Reporte diario aceptado (AR)", "tipo": "reporte", "cantidad": 1 },
+    { "id": "reporte-con-cfe", "descripcion": "Reporte diario de una jornada con comprobantes, sin advertencias de consistencia", "tipo": "reporte", "cantidad": 1, "conComprobantes": true },
+    { "id": "intercambio-emisor", "descripcion": "Sobre enviado a otro emisor electrónico (con adenda) y recibido por él", "tipo": "intercambio", "cantidad": 1, "rol": "emisor" },
+    { "id": "intercambio-receptor", "descripcion": "Sobre recibido de otro emisor, respondido con ACKSobre y ACKCFE válidos", "tipo": "intercambio", "cantidad": 1, "rol": "receptor" },
+    { "id": "representacion-impresa", "descripcion": "Representación impresa (PDF) revisada por la DGI", "tipo": "manual" }
+  ]
+}

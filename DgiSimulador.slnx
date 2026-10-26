@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/DgiSimulador/DgiSimulador.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/DgiSimulador.Tests/DgiSimulador.Tests.csproj" />
+  </Folder>
+</Solution>

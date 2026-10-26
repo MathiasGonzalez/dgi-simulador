@@ -1,0 +1,186 @@
+# dgi-simulador
+
+Simulador de los servicios web de facturación electrónica de la DGI (Uruguay) para desarrollar y probar en CI sin depender del ambiente de prueba de la DGI.
+
+> **No reemplaza la homologación.** La DGI aprueba la homologación con lo que recibe en su ambiente de prueba (`ePrueba`) y revisa a mano la representación impresa y el intercambio. El simulador sirve para llegar a esa etapa con todo funcionando y para probar casos que contra la DGI no se pueden provocar: rechazos, demoras, caídas y CAE vencidos.
+
+## Qué simula
+
+| Servicio | Rutas | Operaciones |
+|---|---|---|
+| Recepción (`WS_eFactura`) | `/ePrueba/ws_eprueba`, `/efactura/ws_efactura` | `EFACRECEPCIONSOBRE`, `EFACCONSULTARESTADOENVIO`, `EFACRECEPCIONREPORTE` |
+| Consultas (`WS_eFactura_Consultas`) | `/ePrueba/ws_consultasPrueba`, `/efactura/ws_consultas` | estado de CFE, padrón (normal, transición y comprimidos), CFE recibidos, envíos de sobres, CFE y reportes, respuesta a un reporte |
+| Intercambio (`WS_eFactura_Intercambio`) | `/intercambio/{rut}` de una empresa simulada | `SOBRE`, `RESPUESTASOBRE`, `RESPUESTACFES`, `NOTIFICACIONANULACIONCFE` |
+
+- **Mensajes:** SOAP 1.1 con WS-Security, como la DGI. Los WSDL oficiales se sirven con `?wsdl`, con la dirección del simulador.
+- **Acuses:** `ACKSobre`, `ACKCFE` y `ACKRepDiario` firmados por "la DGI", con la CA de prueba del simulador.
+- **Validación:** los acuses y los documentos se validan contra los XSD oficiales, que vienen en `src/DgiSimulador/Esquemas` y `Wsdl`.
+
+Los controles se escribieron a partir de los documentos de la DGI, sin código de los productos que se prueban, para que el simulador no acepte un error que comparte con ellos.
+
+## Arranque
+
+```bash
+docker compose up          # http://localhost:8080
+# o, sin Docker:
+dotnet run --project src/DgiSimulador
+```
+
+La página de inspección está en `http://localhost:8080/admin`. Muestra:
+- el padrón, los CAE, los sobres, los CFE con sus motivos y advertencias, los reportes y el intercambio;
+- las fallas programadas;
+- el avance de homologación de cada emisor.
+
+## Configurar un producto
+
+1. **Dar de alta el emisor y bajar su certificado de prueba.** Lo emite la CA del simulador, con `SERIALNUMBER=RUC<rut>`:
+
+   ```bash
+   curl -X POST localhost:8080/admin/emisores -H 'Content-Type: application/json' \
+     -d '{"rut":"211234560019","denominacion":"Mi Empresa S.A.","mail":"facturas@miempresa.uy"}'
+   ```
+
+   La respuesta trae el certificado en dos formas: `pfx` (en base64, sin contraseña) y `certificadoPem`/`clavePem`. También se baja con `GET /admin/emisores/{rut}/certificado.pfx`. Si querés usar un certificado propio, importalo con `POST /admin/certificados` (`{"pem": "..."}`, o con `"raiz": true` para confiar en su CA).
+
+2. **Autorizar un CAE:**
+
+   ```bash
+   curl -X POST localhost:8080/admin/cae -H 'Content-Type: application/json' \
+     -d '{"rut":"211234560019","tipo":101,"serie":"A","desde":1,"hasta":100000}'
+   ```
+
+   La respuesta trae dos cosas:
+   - `constancia`: el XML de la constancia, con el mismo formato que baja el portal de la DGI, para los productos que importan ese archivo.
+   - `cae`: los datos con los nombres de `UruFactura.Cae`.
+
+3. **Apuntar el producto al simulador:**
+   - **UruFactura:** `UrlEnvio = "http://localhost:8080/ePrueba/ws_eprueba"` y `UrlConsultas = "http://localhost:8080/ePrueba/ws_consultasPrueba"`, con el certificado del paso 1.
+   - **Cualquier otro producto:** configurá las URL de los servicios de recepción y de consultas con esas mismas direcciones, y registrá el emisor con los PEM del paso 1. En Cloudflare Workers, los tests de `vitest-pool-workers` pueden llamar a `localhost`.
+
+Para CI conviene cargar todo al arrancar con una semilla. Hay un ejemplo en [semilla.ejemplo.json](semilla.ejemplo.json); se activa con `Simulador__Semilla=/ruta/semilla.json`.
+
+## Controles
+
+Los códigos y las glosas son los oficiales: las enumeraciones de `Glosa` en `DGITypes.xsd`.
+
+| Etapa | Control | Código |
+|---|---|---|
+| Mensaje | WS-Security: token, firma del Body y algoritmo (RSA-SHA1 o SHA256) | SOAP Fault |
+| Sobre | No es XML o la raíz no es `EnvioCFE` | S01 |
+| | RUC de la carátula, del certificado, del envío (WS-Security) y de los CFE | S02 |
+| | Certificado vigente y de confianza | S03 |
+| | XSD de la carátula y `RutReceptor` | S04 |
+| | `CantCFE` contra el contenido | S05 |
+| | Certificado de la carátula contra el de las firmas de los CFE | S06 |
+| | Tamaño (`TamanoMaximoKb`) | S07 |
+| | Sobre ya recibido (mismo RUT e `Idemisor`) | S08 |
+| CFE | Número informado como anulado en un reporte | E01 |
+| | Número ya recibido, o repetido en el sobre | E02 |
+| | Serie, número, rango o vencimiento distintos de los del CAE | E03 |
+| | Firma XMLDSig y certificado del emisor | E04 |
+| | XSD y reglas del formato: montos de los ítems, totales por indicador, IVA, `MntTotal`, `MntPagar`, retenciones, receptor de la e-Factura, tope de 5.000 UI, referencias de las notas, dígitos verificadores | E05 |
+| | Total en pesos mayor que `MontoHabitualMaximo` | E06 |
+| | Firmado fuera de la vigencia del CAE | E07 |
+| | RUC del complemento fiscal | E08 |
+| | CAE inexistente, de otro RUT o de otro tipo | E09 |
+| | Tipo de cambio que falta o fuera de rango | E10 |
+| | CAE especial y causal | E11, E13 |
+| | Referencia a un CFE que la DGI no tiene aceptado | E12 |
+| Contingencia (2xx) | Con problemas que tienen observación equivalente: CE con `ObsCFC` (C03…C15) | CE |
+| Reporte | No es XML o la raíz no es `Reporte` | R01 |
+| | RUC del reporte, de la firma y del envío | R02 |
+| | Firma y certificado | R03 |
+| | XSD, `CantDocsUtil` = emitidos + anulados, `CantComprobantes` = utilizados + CFC emitidos | R04 |
+| | `SecEnvio` correlativo por fecha | R05 |
+| | `FechaResumen` posterior a la recepción | R06 |
+
+**Rechazos y advertencias.** Las reglas que la normativa no deja claras se anotan como **advertencias** y no rechazan. Son estas:
+- el redondeo con precios con IVA incluido (`MntBruto=1`);
+- los porcentajes globales;
+- `MntPagar` con retenciones;
+- la consistencia del reporte con los CFE del día: cantidades, rangos y montos.
+
+Las advertencias se ven en `/admin` y en el checklist. Con `Simulador__Estricto=true` rechazan como las demás.
+
+## Fallas programadas
+
+`POST /admin/fallas` con `{"operacion": "EFACRECEPCIONSOBRE" | "*", "tipo": ..., "veces": 1}`:
+
+| Tipo | Efecto |
+|---|---|
+| `timeout` | No responde durante `segundos` (por defecto 120) y después devuelve 504 |
+| `http500`, `http503` | Error HTTP sin SOAP |
+| `html502` | 502 con la página HTML de un proxy |
+| `soapfault` | SOAP Fault con `detalle` |
+| `rechazo` | `codigo` S.. rechaza el sobre; E.. rechaza cada CFE del sobre; R.. rechaza el reporte. Con la operación `SOBRE`, un rechazo comercial (E20–E26) del receptor simulado |
+| `demora` | El resultado del sobre recién se puede consultar después de `segundos` |
+
+## Intercambio entre empresas
+
+Una empresa con `"simulado": true` en el padrón la maneja el simulador.
+
+**Como receptor**, recibe los sobres `EnvioCFE_entreEmpresas` del producto de dos formas:
+- **Por su servicio web** (`/intercambio/{rut}`): responde el código 1000 y después manda `ACKSobre` y `ACKCFE` al `urlServicio` del emisor, si está en el padrón.
+- **Por correo** (`POST /admin/intercambio/{rut}/correo?nombre=Sob_...xml`, con el XML en el cuerpo): devuelve los archivos `M_` y `ME_`. Si se configura `Simulador:UrlEntregaCorreo`, los entrega como MIME, por ejemplo al handler de correo de `wrangler dev`.
+
+En los dos casos controla el lado receptor (S01–S07, S20 y E02–E07). También recibe y valida las respuestas del producto y sus comunicaciones de anulación.
+
+**Como emisor**, genera una e-Factura para el producto:
+
+```bash
+curl -X POST localhost:8080/admin/intercambio/emitir -H 'Content-Type: application/json' \
+  -d '{"rutEmisor":"217654330015","rutReceptor":"211234560019","variante":"valido","canal":"descarga"}'
+```
+
+- **A la DGI:** la manda a "la DGI", así que aparece en `EFACCONSULTARCFERECIBIDOS` del producto.
+- **Al producto:** le entrega el sobre por `ws`, `correo` o `descarga`.
+- **Variantes:** `valido`, `firma`, `cae-vencido`, `fuera-de-rango`, `otro-receptor` y `totales`. Cada una prueba los controles del producto como receptor.
+
+## Checklist de homologación
+
+`GET /admin/homologacion/{rut}` (JSON) o `GET /admin/homologacion/{rut}.md` (Markdown) muestra qué casos cumplió el emisor:
+- CFE aceptados por tipo y condición: receptor, nota con referencia, moneda extranjera, contingencia;
+- reportes;
+- intercambio como emisor y como receptor;
+- casos manuales, que se marcan con `POST /admin/homologacion/{rut}/manual`.
+
+El set incluido ([set-pruebas.json](src/DgiSimulador/Homologacion/set-pruebas.json)) es **provisorio**: el instructivo oficial no es público. Se baja de DGI en línea → Gestión CFE → Homologación y se pasa con `Simulador__SetDePruebas=/ruta/set.json`.
+
+## Configuración (`Simulador__*`)
+
+| Opción | Por defecto | Para qué |
+|---|---|---|
+| `Datos` | `datos` | Carpeta de la base SQLite y de las claves de la CA |
+| `DemoraConsultaSegundos` | 2 | Desde cuándo se puede consultar el resultado de un sobre (`Fechahora`) |
+| `Estricto` | false | Las advertencias rechazan |
+| `Tolerancia` | 0.01 | Diferencia admitida en los montos |
+| `TamanoMaximoKb` | 10240 | Máximo de un sobre o reporte (S07) |
+| `Confianza` | `Registrados` | `Cualquiera` acepta cualquier certificado vigente con RUT |
+| `RutsDgi` | 214844360018 y 219999830019 | `RutReceptor` aceptados en el sobre |
+| `UnidadIndexada__{año}` | — | UI al 31/12, para el tope de 5.000 UI del año siguiente |
+| `TiposDeCambio__{moneda}__Minimo/Maximo` | USD y EUR entre 20 y 80/90 | Rango del tipo de cambio (E10) |
+| `MontoHabitualMaximo` | — | Umbral del E06 |
+| `ExigirReferenciasConocidas` | true | Si la referencia a un CFE desconocido rechaza (E12) o se advierte |
+| `UrlPublica` | la del pedido | Dirección que se publica en los WSDL |
+| `UrlEntregaCorreo` | — | Dónde entrega correos el receptor simulado |
+| `Semilla`, `SetDePruebas` | — | Archivos JSON que se cargan al arrancar |
+
+## Supuestos a confirmar contra la DGI
+
+Cuando la DGI responda distinto que el simulador para el mismo XML, agregá el caso como prueba de regresión, con la respuesta real anonimizada, y corregí el simulador.
+
+- **Glosas de los motivos.** Se asociaron a los códigos en el orden de las enumeraciones del XSD. Los comentarios del mismo XSD traen una numeración anterior que no coincide.
+- **`RutReceptor` del sobre en el ambiente de prueba.** Hay productos que usan 214844360018 y otros que usan 219999830019, el "RUT de DGI de pruebas". El simulador acepta los dos.
+- **`EFACCONSULTARESTADOENVIO` antes de `Fechahora`.** Se responde la carátula sin `ACKCFE_Det`. El XSD exige al menos un detalle, así que la DGI debe responder otra cosa.
+- **`EstadoCFE` de `EFACCONSULTARESTADOCFE`.** Se devuelve el estado del comprobante (AE, BE o CE). El WSDL no lo define.
+- **Contingencia.** Con problemas que tienen equivalente en `ObsCFC` queda CE; si no, BE.
+- **Tamaño máximo del sobre.** La DGI no lo publica.
+- **Validador de .NET.** No admite enteros de más de 29 dígitos en `xs:integer`. El simulador ignora ese error en `ds:X509SerialNumber`, que en los certificados reales tiene 38 dígitos.
+
+## Desarrollo
+
+```bash
+dotnet test DgiSimulador.slnx
+```
+
+Las pruebas levantan el simulador en memoria, cada clase con su propia base temporal. Para probar un producto de punta a punta, levantá el simulador con `dotnet run --project src/DgiSimulador`, que escucha en `http://localhost:8080` (se cambia con `Urls`), y apuntá el producto ahí.
