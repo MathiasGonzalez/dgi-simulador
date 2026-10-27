@@ -4,7 +4,7 @@ Cuánto se parece cada servicio del simulador a la DGI, en qué se basa esa esti
 
 > **Son estimaciones, no mediciones.** No hay capturas públicas de respuestas reales de `ePrueba`, ni el set de homologación es público. El porcentaje compara el simulador con los documentos oficiales, con los ejemplos que publica la DGI y con productos reales (UruFactura). Usalo como orden de magnitud: lo que vale es la columna "Qué falta".
 
-Última revisión: 2026-10-27, con Formato CFE v25.2, Formato del Sobre v05, Formato del Reporte v13.2, Mensajes de Respuesta v19, XSD 1.44.2, el documento de servicios web de consultas v1.10 y el estándar de intercambio v1.3.
+Última revisión: 2026-10-27 (pruebas de UruFactura y cf-factura en CI y descripciones del intercambio), con Formato CFE v25.2, Formato del Sobre v05, Formato del Reporte v13.2, Mensajes de Respuesta v19, XSD 1.44.2, el documento de servicios web de consultas v1.10 y el estándar de intercambio v1.3.
 
 ## Criterio
 
@@ -22,16 +22,16 @@ El porcentaje de cada servicio pondera cuatro cosas:
 | Servicio | Fidelidad | Confianza | Qué la respalda | Qué falta |
 |---|---|---|---|---|
 | WSDL y XSD (`?wsdl`) | **100 %** | alta | Idénticos byte a byte a los que publica la DGI | Nada |
-| Transporte y WS-Security (todos los servicios) | **75 %** | media | Firma del Body con RSA-SHA1, como el ejemplo de invocación de la DGI | No controla `SOAPAction` (la DGI publica uno por operación). Corre en HTTP, no HTTPS. Los textos de los SOAP Fault de la DGI no se conocen |
-| `EFACRECEPCIONSOBRE` | **85 %** | media-alta | Motivos y glosas de v19. Límites de 2 MB y 250 CFE. El sobre de ejemplo de la DGI pasa XSD, firmas y reglas. UruFactura: 14 CFE de 8 tipos aceptados | Parte de las validaciones del Formato CFE (ver abajo). E14 y E15 solo se provocan con fallas programadas. El `RutReceptor` de `ePrueba` no está confirmado |
+| Transporte y WS-Security (todos los servicios) | **75 %** | media | Firma del Body con RSA-SHA1, como el ejemplo de invocación de la DGI. Acepta los mensajes de UruFactura (RSA-SHA1 o SHA256) y de cf-factura (exc-C14N, RSA-SHA256) | No controla `SOAPAction` (la DGI publica uno por operación; los dos productos mandan el del WSDL). Corre en HTTP, no HTTPS. Los textos de los SOAP Fault de la DGI no se conocen |
+| `EFACRECEPCIONSOBRE` | **85 %** | media-alta | Motivos y glosas de v19. Límites de 2 MB y 250 CFE. El sobre de ejemplo de la DGI pasa XSD, firmas y reglas. En el CI de los productos, sin advertencias: UruFactura con 12 casos de 6 tipos y notas de crédito, y cf-factura con los 21 tipos de la prueba simplificada, incluidos los de cuenta ajena | Parte de las validaciones del Formato CFE (ver abajo). E14 y E15 solo se provocan con fallas programadas. El `RutReceptor` de `ePrueba` no está confirmado |
 | `EFACCONSULTARESTADOENVIO` | **80 %** | media | `ACKCFE` con AE, BE o CE y sus motivos. `Fechahora` al segundo | Qué responde la DGI antes de `Fechahora`: el simulador devuelve una carátula sin detalle, que no valida contra el XSD |
-| `EFACRECEPCIONREPORTE` | **75 %** | media | R01 a R06 según v19. El reporte de ejemplo de la DGI pasa XSD, firma y aritmética interna. El de UruFactura se recibe sin advertencias | Falta revisar campo por campo el Formato del Reporte v13.2. La consistencia con los CFE del día solo advierte |
+| `EFACRECEPCIONREPORTE` | **75 %** | media | R01 a R06 según v19. El reporte de ejemplo de la DGI pasa XSD, firma y aritmética interna. Los de UruFactura y cf-factura se reciben sin advertencias | Falta revisar campo por campo el Formato del Reporte v13.2. La consistencia con los CFE del día solo advierte |
 | `EFACCONSULTARESTADOCFE` | **85 %** | media | Coincide con el ejemplo del documento de consultas: `EstadoCFE`, `IdEmisor`, `IdReceptor` y `ParamConsulta` | Qué responde si el CFE no existe |
 | `ENVIOSCFE`, `ENVIOSSOBRE`, `ENVIOSREPORTE` y `RESPUESTAREPORTE` | **80–85 %** | media | Estructuras del XSD y ejemplos del documento | Filtros y casos vacíos que la DGI no documenta |
 | `EFACCONSULTARCFERECIBIDOS` | **75 %** | baja | Contrato del XSD | Solo devuelve CFE de las empresas simuladas |
 | Padrón (normal, de transición y comprimidos) | **90 %** | alta | gzip y base64 sobre UTF-8, como el anexo de la DGI | Los datos son sintéticos, a propósito |
 | Intercambio: `Sobre` | **80 %** | media | Códigos 1000 y 1001. Controles del receptor (S01–S07, S20, E02–E07). Acuses asincrónicos. `Codigo`, `Descripcion` y `Detalle` como el XSD oficial | Nunca responde 1002 ("Error al recibir el Sobre. Intente luego") |
-| Intercambio: `RespuestaSobre`, `RespuestaCFEs` y `NotificacionAnulacionCFE` | **80 %** | media | Códigos x000 y x001. Valida XSD y firma | Responde "Recibido." donde el estándar dice "ACK Sobre Recibido.", "ACKCFE Recibido." y "Anulación CFEs Recibido.". Nunca devuelve x002 |
+| Intercambio: `RespuestaSobre`, `RespuestaCFEs` y `NotificacionAnulacionCFE` | **85 %** | media | Códigos x000 y x001 con las descripciones de las tablas del estándar ("ACK Sobre Recibido.", "ACKCFE Recibido.", "Anulación CFEs Recibido."). Valida XSD y firma | Nunca devuelve x002. El ejemplo del estándar dice "ACKSobre Recibido." y su tabla "ACK Sobre Recibido."; se usa la tabla |
 
 **En conjunto: cerca de 80 %.** Cada servicio pesa según su lugar en la homologación: sobre 40 %, consulta del envío 20 %, reporte 20 %, consultas 10 % e intercambio 10 %.
 

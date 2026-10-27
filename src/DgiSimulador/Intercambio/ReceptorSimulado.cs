@@ -42,8 +42,14 @@ internal sealed class ReceptorSimulado(
             case "NOTIFICACIONANULACIONCFE":
                 var tipo = pedido.Operacion switch { "RESPUESTASOBRE" => "ACKSOBRE", "RESPUESTACFES" => "ACKCFE", _ => "ANULACION" };
                 var (valido, detalle) = RegistrarRespuesta(empresa, tipo, xml, "ws", null);
-                var codigo = pedido.Operacion switch { "RESPUESTASOBRE" => 2000, "RESPUESTACFES" => 3000, _ => 4000 };
-                return Respuesta(valido ? codigo : codigo + 1, valido ? "Recibido." : "Rechazado.", detalle);
+                // Códigos y descripciones de las tablas del estándar de intercambio (sección de cada operación).
+                var (codigo, mensaje) = pedido.Operacion switch
+                {
+                    "RESPUESTASOBRE" => (2000, "ACK Sobre"),
+                    "RESPUESTACFES" => (3000, "ACKCFE"),
+                    _ => (4000, "Anulación CFEs"),
+                };
+                return Respuesta(valido ? codigo : codigo + 1, $"{mensaje} {(valido ? "Recibido." : "Rechazado.")}", detalle);
             default:
                 throw new FaultSoap($"WS_eFactura_Intercambio no tiene la operación {pedido.Operacion}.");
         }
