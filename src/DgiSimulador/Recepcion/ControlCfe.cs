@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Xml;
 using DgiSimulador.Certificados;
 using DgiSimulador.Estado;
 using DgiSimulador.Xml;
@@ -12,7 +14,7 @@ internal sealed record ResultadoCfe(CfeLeido Cfe, string Estado, IReadOnlyList<M
 internal sealed class ContextoSobre
 {
     internal HashSet<(int, string, long)> Vistos { get; } = [];
-    internal HashSet<(int, string, long)> Aceptados { get; } = [];
+    internal Dictionary<(int, string, long), CfeLeido> Aceptados { get; } = [];
 }
 
 /// <summary>
@@ -29,6 +31,7 @@ internal sealed class ControlCfe(Almacen almacen, Autoridad autoridad, IOptions<
         var hallazgos = new List<Hallazgo>();
         FirmaDelCfe(cfe, firma, hallazgos);
         Formato(cfe, erroresXsd, hallazgos);
+        Fechas(cfe, hallazgos);
 
         if (cfe is { Tipo: { } tipo, Serie: { } serie, Nro: { } nro } && cfe.RutEmisor is { } rut)
         {
@@ -57,7 +60,7 @@ internal sealed class ControlCfe(Almacen almacen, Autoridad autoridad, IOptions<
             : cfe.EsContingencia && motivos.All(m => Motivos.Contingencia.ContainsKey(m.Codigo)) ? "CE"
             : "BE";
         if (estado != "BE" && cfe is { Tipo: { } t, Serie: { } s, Nro: { } n })
-            contexto.Aceptados.Add((t, s, n));
+            contexto.Aceptados[(t, s, n)] = cfe;
         return new ResultadoCfe(cfe, estado, motivos, advertencias);
     }
 
@@ -91,6 +94,17 @@ internal sealed class ControlCfe(Almacen almacen, Autoridad autoridad, IOptions<
             h.Add(new("E05", $"TipoCFE {tipo} no es un tipo de CFE."));
         else if (TiposCfe.FamiliaDe(tipo) != familia)
             h.Add(new("E05", $"TipoCFE {tipo} ({TiposCfe.Nombre(tipo)}) no va en {TiposCfe.Raiz(familia)}."));
+    }
+
+    /// <summary>A-C5 y F-C7: la fecha del comprobante y la de los CFE referenciados no pasan de 60 días después de hoy.</summary>
+    private void Fechas(CfeLeido cfe, List<Hallazgo> h)
+    {
+        var limite = Hora.Fecha(reloj.GetUtcNow()).AddDays(60);
+        if (cfe.FechaEmision is { } fecha && fecha > limite)
+            h.Add(new("E05", $"FchEmis {Hora.Formato(fecha)} es posterior a hoy + 60 días ({Hora.Formato(limite)})."));
+        foreach (var referencia in cfe.Referencias)
+            if (Hora.LeerFecha(referencia.Texto("FechaCFEref")) is { } fechaRef && fechaRef > limite)
+                h.Add(new("E05", $"La referencia {referencia.Texto("NroLinRef")} tiene FechaCFEref {Hora.Formato(fechaRef)}, posterior a hoy + 60 días."));
     }
 
     private void Cae(CfeLeido cfe, string rut, int tipo, string serie, long nro, List<Hallazgo> h)
@@ -163,10 +177,32 @@ internal sealed class ControlCfe(Almacen almacen, Autoridad autoridad, IOptions<
                 || XmlUtil.Entero(referencia.Texto("NroCFERef")) is not { } nro
                 || cfe.RutEmisor is not { } rut)
                 continue;
-            if (contexto.Aceptados.Contains(((int)tipo, serie, nro)) || almacen.CfeAceptado(rut, (int)tipo, serie, nro) is not null)
-                continue;
-            h.Add(new("E12", $"La referencia {referencia.Texto("NroLinRef")} indica {TiposCfe.Nombre((int)tipo)} {serie}{nro}, que la DGI no tiene aceptado.",
-                _opciones.ExigirReferenciasConocidas));
+            var referido = contexto.Aceptados.GetValueOrDefault(((int)tipo, serie, nro))
+                           ?? (almacen.CfeAceptado(rut, (int)tipo, serie, nro) is { } registrado
+                               ? CfeLeido.Leer(XmlUtil.Cargar(registrado.Xml).DocumentElement!)
+                               : null);
+            if (referido is null)
+                h.Add(new("E12", $"La referencia {referencia.Texto("NroLinRef")} indica {TiposCfe.Nombre((int)tipo)} {serie}{nro}, que la DGI no tiene aceptado.",
+                    _opciones.ExigirReferenciasConocidas));
+            else
+                ComoElReferido(referencia, referido, h);
         }
+    }
+
+    /// <summary>
+    /// F-C7 a F-C10: la fecha, la moneda y el tipo de cambio son los del CFE referenciado, y el monto no supera su total a
+    /// pagar. El formato no dice con qué motivo se rechaza la diferencia: se usa E12.
+    /// </summary>
+    private static void ComoElReferido(XmlElement referencia, CfeLeido referido, List<Hallazgo> h)
+    {
+        var linea = referencia.Texto("NroLinRef");
+        if (Hora.LeerFecha(referencia.Texto("FechaCFEref")) is { } fecha && fecha != referido.FechaEmision)
+            h.Add(new("E12", $"La referencia {linea} informa la fecha {Hora.Formato(fecha)} y {referido.Identificacion} es del {(referido.FechaEmision is { } f ? Hora.Formato(f) : "(sin fecha)")}."));
+        if (XmlUtil.Decimal(referencia.Texto("MntCFEref")) is { } monto && referido.MontoInformado("MntPagar") is { } pagar && monto > pagar)
+            h.Add(new("E12", $"La referencia {linea} informa el monto {XmlUtil.Numero(monto)} y el total a pagar de {referido.Identificacion} es {XmlUtil.Numero(pagar)}."));
+        if (referencia.Texto("TpoMonedaRef") is { } moneda && moneda != referido.Moneda)
+            h.Add(new("E12", $"La referencia {linea} informa la moneda {moneda} y {referido.Identificacion} es en {referido.Moneda}."));
+        if (XmlUtil.Decimal(referencia.Texto("TpoCambioRef")) is { } cambio && cambio != (referido.TipoCambio ?? 1m))
+            h.Add(new("E12", $"La referencia {linea} informa el tipo de cambio {cambio.ToString(CultureInfo.InvariantCulture)} y el de {referido.Identificacion} es {(referido.TipoCambio ?? 1m).ToString(CultureInfo.InvariantCulture)}."));
     }
 }
