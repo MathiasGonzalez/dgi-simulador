@@ -136,8 +136,10 @@ public sealed class IntercambioTests(Simulador sim) : IClassFixture<Simulador>
 
         var r1 = await sim.ConXmlData($"/intercambio/{simulada.Rut}", "WS_eFactura_Intercambio", "RESPUESTASOBRE", producto.Certificado, acuse);
         Assert.Equal("2000", r1.Buscar("Codigo")!.InnerText);
+        Assert.Equal("ACK Sobre Recibido.", r1.Buscar("Descripcion")!.InnerText);
         var r2 = await sim.ConXmlData($"/intercambio/{simulada.Rut}", "WS_eFactura_Intercambio", "RESPUESTACFES", producto.Certificado, cfes);
         Assert.Equal("3000", r2.Buscar("Codigo")!.InnerText);
+        Assert.Equal("ACKCFE Recibido.", r2.Buscar("Descripcion")!.InnerText);
 
         var avance = sim.Servicio<Homologacion.SetDePruebas>().Avance(producto.Rut);
         Assert.True(avance.Casos.Single(c => c.Caso.Id == "intercambio-receptor").Cumplido);
@@ -153,6 +155,7 @@ public sealed class IntercambioTests(Simulador sim) : IClassFixture<Simulador>
         var acuse = Acuses.Sobre(caratula, 1, "AS", [], null, null, otro.Certificado);
         var respuesta = await sim.ConXmlData($"/intercambio/{simulada.Rut}", "WS_eFactura_Intercambio", "RESPUESTASOBRE", producto.Certificado, acuse);
         Assert.Equal("2001", respuesta.Buscar("Codigo")!.InnerText);
+        Assert.Equal("ACK Sobre Rechazado.", respuesta.Buscar("Descripcion")!.InnerText);
     }
 
     private static string? Autoridad(XmlDocument firmado) =>
