@@ -1,0 +1,123 @@
+[
+  {
+    "id": "efactura-documentos",
+    "nombre": "e-Factura: documentos de interés (formatos CFE, sobre, reporte, mensajes de respuesta, CAE, XSD, intercambio)",
+    "url": "https://www.efactura.dgi.gub.uy/principal/ampliacion_de_contenido/documentos-de-interes?es=",
+    "tipo": "html",
+    "enlaces": "/files/"
+  },
+  {
+    "id": "impo-res-798-2012",
+    "nombre": "Resolución DGI 798/012 y modificativas (IMPO)",
+    "url": "https://www.impo.com.uy/bases/resoluciones-dgi-interes-general/798-2012",
+    "tipo": "html"
+  },
+  {
+    "id": "wsdl-recepcion-testing",
+    "nombre": "WSDL recepción (testing) — Wsdl/ws_eprueba.wsdl",
+    "url": "https://efactura.dgi.gub.uy:6443/ePrueba/ws_eprueba?wsdl",
+    "tipo": "xml"
+  },
+  {
+    "id": "xsd-recepcion-testing",
+    "nombre": "XSD del WSDL de recepción (testing) — Esquemas/ws_eprueba.xsd1.xsd",
+    "url": "https://efactura.dgi.gub.uy:6443/ePrueba/ws_eprueba.xsd1.xsd",
+    "tipo": "xml"
+  },
+  {
+    "id": "wsdl-consultas-testing",
+    "nombre": "WSDL consultas (testing) — Wsdl/ws_consultasPrueba.wsdl",
+    "url": "https://efactura.dgi.gub.uy:6460/ePrueba/ws_consultasPrueba?wsdl",
+    "tipo": "xml"
+  },
+  {
+    "id": "xsd-consultas-testing",
+    "nombre": "XSD del WSDL de consultas (testing) — Esquemas/ws_consultasPrueba.xsd1.xsd",
+    "url": "https://efactura.dgi.gub.uy:6460/ePrueba/ws_consultasPrueba.xsd1.xsd",
+    "tipo": "xml"
+  },
+  {
+    "id": "wsdl-recepcion-produccion",
+    "nombre": "WSDL recepción (producción)",
+    "url": "https://efactura.dgi.gub.uy/efactura/ws_efactura?wsdl",
+    "tipo": "xml"
+  },
+  {
+    "id": "wsdl-consultas-produccion",
+    "nombre": "WSDL consultas (producción)",
+    "url": "https://efactura.dgi.gub.uy:6440/efactura/ws_consultas?wsdl",
+    "tipo": "xml"
+  },
+  {
+    "id": "wsdl-intercambio",
+    "nombre": "WSDL de intercambio entre emisores",
+    "url": "https://www.efactura.dgi.gub.uy/files/wsdl_aws_efactura_intercambio.xml?es",
+    "tipo": "xml"
+  },
+  {
+    "id": "xsd-intercambio",
+    "nombre": "XSD del WSDL de intercambio — Esquemas/aws_efactura_intercambio.xsd1.xsd",
+    "url": "https://www.efactura.dgi.gub.uy/files/aws_efactura_intercambio_xsd1_xsd?es",
+    "tipo": "xml"
+  },
+  {
+    "id": "xsd-respuesta-intercambio",
+    "nombre": "XSD de respuesta de los servicios de intercambio",
+    "url": "https://www.efactura.dgi.gub.uy/files/respuesta-servicios-ws-intercambio--xsd?es",
+    "tipo": "xml"
+  },
+  {
+    "id": "xsd-paquete",
+    "nombre": "Paquete de XSD publicado (1.44.2) — Esquemas/",
+    "url": "https://www.efactura.dgi.gub.uy/files/xsds_fe_1_44_2-zip?es",
+    "tipo": "binario"
+  },
+  {
+    "id": "formato-mensajes-respuesta",
+    "nombre": "Formato Mensajes Respuesta v19 (motivos S, E, C y R) — Motivos.cs",
+    "url": "https://www.efactura.dgi.gub.uy/files/formato_mensajes_respuesta_v19-pdf?es",
+    "tipo": "binario"
+  },
+  {
+    "id": "formato-sobre",
+    "nombre": "Formato Sobre v05",
+    "url": "https://www.efactura.dgi.gub.uy/files/Formato_Sobre_v05_pdf?es",
+    "tipo": "binario"
+  },
+  {
+    "id": "formato-reporte",
+    "nombre": "Formato Reporte CFE v13.2",
+    "url": "https://www.efactura.dgi.gub.uy/files/formato_reporte_cfe_v13_2-pdf?es",
+    "tipo": "binario"
+  },
+  {
+    "id": "formato-cfe",
+    "nombre": "Formato CFE v25.2 — Recepcion/ReglasFormato.cs",
+    "url": "https://www.efactura.dgi.gub.uy/files/formato_cfe_v25-2-pdf?es",
+    "tipo": "binario"
+  },
+  {
+    "id": "formato-cae",
+    "nombre": "Formato CAE v05",
+    "url": "https://www.efactura.dgi.gub.uy/files/Formato_CAE_v05-pdf?es",
+    "tipo": "binario"
+  },
+  {
+    "id": "ws-externos-recepcion",
+    "nombre": "Servicios Web Externos DGI (recepción)",
+    "url": "https://www.efactura.dgi.gub.uy/files/DocumentoServiciosWebExternos?es",
+    "tipo": "binario"
+  },
+  {
+    "id": "ws-externos-consultas",
+    "nombre": "Servicios Web Externos DGI (consultas)",
+    "url": "https://www.efactura.dgi.gub.uy/files/web-services-externos-consultas-pdf?es",
+    "tipo": "binario"
+  },
+  {
+    "id": "estandar-intercambio",
+    "nombre": "Estándar de intercambio entre emisores a través de servicios web",
+    "url": "https://www.efactura.dgi.gub.uy/files/estandar-de-intercambio-entre-emisores-a-traves-de-servicios-web?es",
+    "tipo": "binario"
+  }
+]

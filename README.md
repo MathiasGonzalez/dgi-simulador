@@ -185,3 +185,18 @@ dotnet test DgiSimulador.slnx
 
 Las pruebas levantan el simulador en memoria, cada clase con su propia base temporal. Para probar un producto de punta a punta, levantá el simulador con `dotnet run --project src/DgiSimulador`, que escucha en `http://localhost:8080` (se cambia con `Urls`), y apuntá el producto ahí.
 
+## Normativa DGI
+
+`normativa-dgi.yml` corre los lunes (y a mano con *Run workflow*). Ejecuta `scripts/dgi-normativa.mjs`, que compara las fuentes de [.github/dgi-normativa/fuentes.json](.github/dgi-normativa/fuentes.json) con sus snapshots:
+- la página de documentos de e-Factura, donde aparecen las versiones nuevas;
+- los WSDL y sus XSD;
+- el hash de los documentos que implementa el simulador: formatos, paquete de XSD y servicios web.
+
+Si algo cambió, abre un issue `dgi-normativa` con el diff, asignado a Copilot, que actualiza el simulador y abre la PR. Mientras haya uno abierto no abre otro.
+
+Para que funcione:
+- **Secret `COPILOT_ASSIGN_TOKEN`:** PAT fine-grained de un usuario con licencia de Copilot, sobre este repo, con Metadata (read) y Actions, Contents, Issues y Pull requests (read/write). Sin él, el issue se crea sin asignar.
+- **Firewall del agente:** en Settings → Copilot → Coding agent, permitir `www.efactura.dgi.gub.uy`, `efactura.dgi.gub.uy` y `www.impo.com.uy`.
+- **Entorno del agente:** lo arma `copilot-setup-steps.yml`, con .NET 10 y Node.
+
+Para agregar una fuente, sumala al JSON y corré `node scripts/dgi-normativa.mjs --actualizar`.
