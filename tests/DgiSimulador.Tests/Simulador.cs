@@ -185,3 +185,7 @@ public sealed class SimuladorChico() : Simulador(new() { ["Simulador:TamanoMaxim
 public sealed class SimuladorConDemora() : Simulador(new() { ["Simulador:DemoraConsultaSegundos"] = "3600" });
 
 public sealed class SimuladorConDemoraCorta() : Simulador(new() { ["Simulador:DemoraConsultaSegundos"] = "1" });
+
+/// <summary>El simulador con la semilla de ejemplo del repositorio.</summary>
+public sealed class SimuladorConSemillaDeEjemplo()
+    : Simulador(new() { ["Simulador:Semilla"] = Path.Combine(AppContext.BaseDirectory, "semilla.ejemplo.json") });

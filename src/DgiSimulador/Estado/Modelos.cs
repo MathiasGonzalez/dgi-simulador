@@ -1,6 +1,6 @@
 namespace DgiSimulador.Estado;
 
-/// <summary>Emisor electrónico del padrón. <see cref="Simulado"/> marca las empresas que simula el propio simulador.</summary>
+/// <summary>Emisor electrónico del padrón. <c>simulado</c> marca las empresas que simula el propio simulador.</summary>
 public sealed record Emisor(
     string Rut,
     string Denominacion,
@@ -13,7 +13,7 @@ public sealed record Emisor(
     bool Simulado,
     DateTimeOffset Modificado);
 
-/// <summary>Rango de numeración autorizado (CAE). <see cref="Id"/> es el número de autorización (<c>CAE_ID</c>).</summary>
+/// <summary>Rango de numeración autorizado (CAE). <c>id</c> es el número de autorización (<c>CAE_ID</c>).</summary>
 public sealed record Cae(
     long Id,
     string Rut,
@@ -88,7 +88,7 @@ public sealed record ReporteRecibido(
     string Acuse);
 
 /// <summary>
-/// Falla programada para las próximas <see cref="Restantes"/> llamadas a una operación (o a todas con <c>*</c>).
+/// Falla programada para las próximas <c>restantes</c> llamadas a una operación (o a todas con <c>*</c>).
 /// </summary>
 public sealed record Falla(long Id, string Operacion, string Tipo, string? Codigo, string? Detalle, int Restantes, int? Segundos);
 

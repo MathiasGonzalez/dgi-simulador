@@ -16,48 +16,78 @@ Simulador de los servicios web de facturación electrónica de la DGI (Uruguay) 
 - **Acuses:** `ACKSobre`, `ACKCFE` y `ACKRepDiario` firmados por "la DGI", con la CA de prueba del simulador.
 - **Validación:** los acuses y los documentos se validan contra los XSD oficiales, que vienen en `src/DgiSimulador/Esquemas` y `Wsdl`.
 
-Los controles se escribieron a partir de los documentos de la DGI, sin código de los productos que se prueban, para que el simulador no acepte un error que comparte con ellos.
+Los controles se escribieron a partir de los documentos de la DGI, sin código de los productos que se prueban, para que el simulador no acepte un error que comparte con ellos. Cuánto se parece cada servicio a la DGI, y qué falta confirmar, está en [FIDELIDAD.md](FIDELIDAD.md).
 
 ## Arranque
 
 ```bash
-docker compose up          # http://localhost:8080
-# o, sin Docker:
+docker run -p 8080:8080 ghcr.io/mathiasgonzalez/dgi-simulador   # http://localhost:8080
+# o, desde este repositorio:
+docker compose up          # con --build compila la imagen local
 dotnet run --project src/DgiSimulador
 ```
+
+La imagen se publica en cada cambio de `main` (`latest` y `sha-<commit>`) y con cada tag `vX.Y.Z`, para amd64 y arm64.
 
 La página de inspección está en `http://localhost:8080/admin`. Muestra:
 - el padrón, los CAE, los sobres, los CFE con sus motivos y advertencias, los reportes y el intercambio;
 - las fallas programadas;
 - el avance de homologación de cada emisor.
 
+La API de administración (`/admin/*`) está descripta en OpenAPI en `http://localhost:8080/openapi/v1.json`, para generar un cliente o explorarla con cualquier visor. Los servicios SOAP se describen con sus WSDL (`?wsdl`).
+
 ## Configurar un producto
 
-1. **Dar de alta el emisor y bajar su certificado de prueba.** Lo emite la CA del simulador, con `SERIALNUMBER=RUC<rut>`:
+1. **Dar de alta el emisor, con su certificado de prueba y un CAE por cada tipo de CFE que emite:**
 
    ```bash
    curl -X POST localhost:8080/admin/emisores -H 'Content-Type: application/json' \
-     -d '{"rut":"211234560019","denominacion":"Mi Empresa S.A.","mail":"facturas@miempresa.uy"}'
+     -d '{"rut":"211234560019","denominacion":"Mi Empresa S.A.","mail":"facturas@miempresa.uy","tipos":[101,102,103,111,112,113]}'
    ```
 
-   La respuesta trae el certificado en dos formas: `pfx` (en base64, sin contraseña) y `certificadoPem`/`clavePem`. También se baja con `GET /admin/emisores/{rut}/certificado.pfx`. Si querés usar un certificado propio, importalo con `POST /admin/certificados` (`{"pem": "..."}`, o con `"raiz": true` para confiar en su CA).
+   La respuesta trae:
+   - `certificado`: lo emite la CA del simulador, con `SERIALNUMBER=RUC<rut>`, en dos formas: `pfx` (en base64, sin contraseña) y `certificadoPem`/`clavePem`. También se baja con `GET /admin/emisores/{rut}/certificado.pfx`.
+   - `caes`: uno por tipo, serie A del 1 al 100000. Cada uno trae `constancia`, el XML con el mismo formato que baja el portal de la DGI, para los productos que importan ese archivo, y `cae`, los datos con los nombres de `UruFactura.Cae`.
 
-2. **Autorizar un CAE:**
+   Repetir el alta no autoriza otro CAE para un tipo que ya tiene. Si querés usar un certificado propio, importalo con `POST /admin/certificados` (`{"pem": "..."}`, o con `"raiz": true` para confiar en su CA).
+
+2. **Otros CAE** (otra serie, otro rango, vencidos o especiales), uno por llamada:
 
    ```bash
    curl -X POST localhost:8080/admin/cae -H 'Content-Type: application/json' \
-     -d '{"rut":"211234560019","tipo":101,"serie":"A","desde":1,"hasta":100000}'
+     -d '{"rut":"211234560019","tipo":101,"serie":"B","desde":1,"hasta":500}'
    ```
-
-   La respuesta trae dos cosas:
-   - `constancia`: el XML de la constancia, con el mismo formato que baja el portal de la DGI, para los productos que importan ese archivo.
-   - `cae`: los datos con los nombres de `UruFactura.Cae`.
 
 3. **Apuntar el producto al simulador:**
    - **UruFactura:** `UrlEnvio = "http://localhost:8080/ePrueba/ws_eprueba"` y `UrlConsultas = "http://localhost:8080/ePrueba/ws_consultasPrueba"`, con el certificado del paso 1.
    - **Cualquier otro producto:** configurá las URL de los servicios de recepción y de consultas con esas mismas direcciones, y registrá el emisor con los PEM del paso 1. En Cloudflare Workers, los tests de `vitest-pool-workers` pueden llamar a `localhost`.
 
-Para CI conviene cargar todo al arrancar con una semilla. Hay un ejemplo en [semilla.ejemplo.json](semilla.ejemplo.json); se activa con `Simulador__Semilla=/ruta/semilla.json`.
+## En CI
+
+En GitHub Actions, el simulador corre como servicio del job y el alta se hace con un `curl`:
+
+```yaml
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    services:
+      dgi:
+        image: ghcr.io/mathiasgonzalez/dgi-simulador:latest
+        ports: ["8080:8080"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Emisor de prueba en el simulador
+        run: |
+          until curl -sf localhost:8080/openapi/v1.json > /dev/null; do sleep 1; done
+          curl -sf -X POST localhost:8080/admin/emisores -H 'Content-Type: application/json' \
+            -d '{"rut":"211234560019","tipos":[101,111]}' > emisor.json
+          jq -r .certificado.pfx emisor.json | base64 -d > emisor.pfx
+      - run: dotnet test   # con las URL de http://localhost:8080 y emisor.pfx
+```
+
+Después de las pruebas, `GET /admin/cfes?rut=...` muestra las advertencias, que no viajan en la respuesta SOAP. Con `Simulador__Estricto=true` (en `env:` del servicio) rechazan.
+
+Fuera de GitHub Actions también se puede cargar todo al arrancar con una semilla: [semilla.ejemplo.json](semilla.ejemplo.json), que se activa con `Simulador__Semilla=/ruta/semilla.json`. Acepta emisores con `tipos`, CAE sueltos y certificados propios (`"certificados": [{"archivo": "certs/mio.pem", "rut": "..."}]`, con la ruta relativa a la semilla). Lo que no se puede cargar se informa en el log y no impide arrancar.
 
 ## Controles
 
@@ -71,14 +101,14 @@ Los controles siguen los documentos vigentes de la DGI: Formato CFE v25.2, Forma
 | | Certificado vigente y de confianza | S03 |
 | | XSD de la carátula y `RutReceptor` | S04 |
 | | `CantCFE` contra el contenido | S05 |
-| | Certificado de la carátula contra el de las firmas de los CFE | S06 |
+| | Certificado de la carátula contra el de las firmas de los CFE, o contra el número de serie que indican | S06 |
 | | Más de 2 MB (`TamanoMaximoKb`) | S07 |
 | | Sobre ya recibido (mismo RUT e `Idemisor`) | S08 |
 | CFE | Número informado como anulado en un reporte | E01 |
 | | Número ya recibido, o repetido en el sobre | E02 |
 | | Serie, número, rango o vencimiento distintos de los del CAE | E03 |
-| | Firma XMLDSig y certificado del emisor | E04 |
-| | XSD y reglas del formato. Ítems: monto, precio y entrega gratuita. Totales: por indicador con descuentos y recargos globales, IVA, `MntTotal`, `MntPagar`, retenciones y créditos fiscales. Receptor: datos obligatorios de cada tipo, país y número del documento, secreto profesional, e-Ticket por encima de 5.000 UI o con retenciones. También cobranza propia, referencias, fechas hasta 60 días adelante y dígitos verificadores | E05 |
+| | Firma XMLDSig y certificado del emisor. Si la firma trae solo `X509IssuerSerial`, como en el sobre de ejemplo de la DGI, se verifica con el certificado de la carátula | E04 |
+| | XSD y reglas del formato. Ítems: monto, precio y entrega gratuita. Totales: por indicador con descuentos y recargos globales, IVA, `MntTotal`, `MntPagar`, retenciones y créditos fiscales. Receptor: datos obligatorios de cada tipo, país y número del documento, secreto profesional, e-Ticket por encima de 5.000 UI o con retenciones. También cobranza propia, referencias, fechas hasta 60 días adelante, firma desde el 2011-10-01 hasta mañana y dígitos verificadores | E05 |
 | | Total en pesos mayor que `MontoHabitualMaximo` | E06 |
 | | Firmado fuera de la vigencia del CAE | E07 |
 | | RUC del complemento fiscal | E08 |
@@ -98,7 +128,8 @@ Los controles siguen los documentos vigentes de la DGI: Formato CFE v25.2, Forma
 - el redondeo con precios con IVA incluido (`MntBruto=1`);
 - los porcentajes globales;
 - los totales con ítems a rebajar del e-Remito de Exportación (indicador 8) y con anulaciones del e-Resguardo (indicador 9). El formato escribe "∑B-C24 − ∑B-C24 (si B-C4=8)" y no aclara si la primera suma incluye esos ítems;
-- la consistencia del reporte con los CFE del día: cantidades, rangos y montos.
+- la consistencia del reporte con los CFE del día: cantidades, rangos y montos;
+- la firma de un CFE sin `X509IssuerSerial`. La zona I del formato pide el número de serie y el emisor del certificado, y los ejemplos de la DGI siempre lo traen.
 
 Las advertencias se ven en `/admin` y en el checklist. Con `Simulador__Estricto=true` rechazan como las demás.
 
@@ -168,14 +199,7 @@ El set incluido ([set-pruebas.json](src/DgiSimulador/Homologacion/set-pruebas.js
 
 ## Supuestos a confirmar contra la DGI
 
-Cuando la DGI responda distinto que el simulador para el mismo XML, agregá el caso como prueba de regresión, con la respuesta real anonimizada, y corregí el simulador.
-
-- **`RutReceptor` del sobre en el ambiente de prueba.** Hay productos que usan 214844360018 y otros que usan 219999830019, el "RUT de DGI de pruebas". El simulador acepta los dos. El ejemplo de invocación a ePrueba del documento "Servicios Web Externos" usa 214844360018. El sobre de ejemplo de la DGI usa 219999830019, pero como emisor y receptor a la vez, así que no lo resuelve.
-- **`EFACCONSULTARESTADOENVIO` antes de `Fechahora`.** Se responde la carátula sin `ACKCFE_Det`. El XSD exige al menos un detalle, así que la DGI debe responder otra cosa.
-- **Contingencia.** Con problemas que tienen equivalente en `ObsCFC` queda CE; si no, BE.
-- **Diferencias con el CFE referenciado.** El formato exige que fecha, moneda y tipo de cambio de la referencia (F-C7, F-C9 y F-C10) sean los del CFE referenciado, y que el monto (F-C8) no supere su total a pagar. No dice con qué motivo se rechaza; el simulador usa E12.
-- **Tamaño máximo.** "2 Mega" se toma como 2048 KB; si la DGI cuenta 2.000.000 bytes, el margen es de 48 KB. El reporte no tiene un máximo publicado.
-- **Validador de .NET.** No admite enteros de más de 29 dígitos en `xs:integer`. El simulador ignora ese error en `ds:X509SerialNumber`, que en los certificados reales tiene 38 dígitos.
+Están en [FIDELIDAD.md](FIDELIDAD.md#supuestos-a-confirmar-contra-la-dgi), junto con la estimación de fidelidad de cada servicio y las validaciones que faltan.
 
 ## Desarrollo
 
@@ -183,7 +207,7 @@ Cuando la DGI responda distinto que el simulador para el mismo XML, agregá el c
 dotnet test DgiSimulador.slnx
 ```
 
-Las pruebas levantan el simulador en memoria, cada clase con su propia base temporal. Para probar un producto de punta a punta, levantá el simulador con `dotnet run --project src/DgiSimulador`, que escucha en `http://localhost:8080` (se cambia con `Urls`), y apuntá el producto ahí.
+Las pruebas levantan el simulador en memoria, cada clase con su propia base temporal. [EjemplosDgi](tests/DgiSimulador.Tests/EjemplosDgi) tiene el sobre y el reporte de ejemplo que publica la DGI, sin modificar: el XSD, las firmas y las reglas del formato del simulador tienen que aceptarlos. Para probar un producto de punta a punta, levantá el simulador con `dotnet run --project src/DgiSimulador`, que escucha en `http://localhost:8080` (se cambia con `Urls`), y apuntá el producto ahí.
 
 ## Normativa DGI
 

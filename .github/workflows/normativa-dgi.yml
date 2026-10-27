@@ -68,9 +68,10 @@ jobs:
              - **Resoluciones (topes, montos, plazos):** las opciones de `Opciones.cs` y las reglas que las usan.
           3. Reglas del simulador:
              - Escribir los controles a partir de los documentos de la DGI. No copiar código de los productos que se prueban con el simulador (UruFactura, cf-factura).
-             - Una regla que la normativa no deja clara se anota como advertencia y no rechaza, y se agrega a "Supuestos a confirmar" del README.
+             - Una regla que la normativa no deja clara se anota como advertencia y no rechaza, y se agrega a "Supuestos a confirmar" de `FIDELIDAD.md`.
              - Cada control nuevo o cambiado lleva su prueba en `tests/DgiSimulador.Tests`.
-             - Actualizar las tablas del README ("Controles", "Configuración", "Supuestos a confirmar") si cambian.
+             - Actualizar las tablas del README ("Controles", "Configuración") si cambian.
+             - Actualizar `FIDELIDAD.md`: la versión de los documentos en "Última revisión", la fila de cada servicio afectado ("Qué la respalda", "Qué falta" y el porcentaje) y la lista de validaciones que faltan.
           4. Si una versión nueva reemplaza a una de `fuentes.json`, cambiar la `url` y el `nombre` de esa fuente a la versión nueva.
           5. Correr `node scripts/dgi-normativa.mjs --actualizar` para regenerar los snapshots e incluirlos en la PR, así el próximo chequeo parte de este estado.
           6. Correr `dotnet test DgiSimulador.slnx`.

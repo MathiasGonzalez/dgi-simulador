@@ -1,15 +1,15 @@
 {
   "emisores": [
-    { "rut": "211234560019", "denominacion": "Mi Empresa S.A.", "mail": "facturas@miempresa.uy", "urlServicio": null },
+    {
+      "rut": "211234560019",
+      "denominacion": "Mi Empresa S.A.",
+      "mail": "facturas@miempresa.uy",
+      "urlServicio": null,
+      "tipos": [101, 102, 103, 111, 112, 113, 181, 182]
+    },
     { "rut": "217654330015", "denominacion": "Proveedor simulado S.A.", "mail": "proveedor@simulado.uy", "simulado": true }
   ],
-  "certificados": [
-    { "archivo": "certs/mi-certificado-de-prueba.pem", "rut": "211234560019" }
-  ],
   "caes": [
-    { "rut": "211234560019", "tipo": 101, "serie": "A", "desde": 1, "hasta": 100000, "id": 90100000001 },
-    { "rut": "211234560019", "tipo": 102, "serie": "A", "desde": 1, "hasta": 10000, "id": 90100000002 },
-    { "rut": "211234560019", "tipo": 111, "serie": "A", "desde": 1, "hasta": 100000, "id": 90100000003 },
-    { "rut": "211234560019", "tipo": 112, "serie": "A", "desde": 1, "hasta": 10000, "id": 90100000004 }
+    { "rut": "211234560019", "tipo": 201, "serie": "A", "desde": 1, "hasta": 500, "id": 90100000001 }
   ]
 }

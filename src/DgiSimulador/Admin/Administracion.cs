@@ -8,7 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace DgiSimulador.Admin;
 
-/// <summary>Alta de un emisor del padrón. Con <see cref="Simulado"/> es una empresa que simula el simulador.</summary>
+/// <summary>Alta de un emisor del padrón. Con <c>simulado</c> es una empresa que simula el simulador.</summary>
 public sealed class NuevoEmisor
 {
     public required string Rut { get; init; }
@@ -23,9 +23,31 @@ public sealed class NuevoEmisor
 
     /// <summary>Emitir un certificado de prueba para el RUT (por defecto sí).</summary>
     public bool EmitirCertificado { get; init; } = true;
+
+    /// <summary>
+    /// Tipos de CFE para los que se autoriza un CAE (serie A, del 1 al 100000), para dejar el emisor listo en una sola llamada.
+    /// Un tipo que ya tiene CAE no recibe otro.
+    /// </summary>
+    public List<int> Tipos { get; init; } = [];
 }
 
-/// <summary>Certificado que se importa (PEM o DER en base64, o un archivo en la semilla). Con <see cref="Raiz"/> es una CA de confianza.</summary>
+/// <summary>El CAE con los nombres de <c>UruFactura.Models.Cae</c>, para cargarlo en un producto .NET.</summary>
+public sealed record DatosCae(
+    string NumeroAutorizacion,
+    int TipoCfe,
+    string Serie,
+    long RangoDesde,
+    long RangoHasta,
+    DateOnly FechaAutorizacion,
+    DateOnly FechaVencimiento,
+    int? Especial,
+    int? CausalEspecial)
+{
+    internal static DatosCae De(Cae cae) =>
+        new(XmlUtil.Numero(cae.Id), cae.Tipo, cae.Serie, cae.Desde, cae.Hasta, cae.Autorizacion, cae.Vencimiento, cae.Especial, cae.Causal);
+}
+
+/// <summary>Certificado que se importa (PEM o DER en base64, o un archivo en la semilla). Con <c>raiz</c> es una CA de confianza.</summary>
 public sealed class NuevoCertificado
 {
     public string? Pem { get; init; }
@@ -35,7 +57,7 @@ public sealed class NuevoCertificado
     public bool Raiz { get; init; }
 }
 
-/// <summary>CAE que se autoriza. Sin <see cref="Id"/> se asigna un número de autorización.</summary>
+/// <summary>CAE que se autoriza. Sin <c>id</c> se asigna un número de autorización.</summary>
 public sealed class NuevoCae
 {
     public required string Rut { get; init; }
@@ -61,16 +83,22 @@ public sealed class Semilla
 /// <summary>Las altas que usan la API de administración y la semilla.</summary>
 internal sealed class Administracion(Almacen almacen, Autoridad autoridad, IOptions<OpcionesSimulador> opciones, TimeProvider reloj, ILogger<Administracion> log)
 {
-    internal (Emisor Emisor, CertificadoEmitido? Certificado) CrearEmisor(NuevoEmisor nuevo)
+    internal (Emisor Emisor, CertificadoEmitido? Certificado, IReadOnlyList<Cae> Caes) CrearEmisor(NuevoEmisor nuevo)
     {
         if (!Documentos.RutValido(nuevo.Rut))
             throw new ArgumentException($"{nuevo.Rut} no es un RUT válido (12 dígitos con dígito verificador).");
+        if (nuevo.Tipos.Where(t => !TiposCfe.Existe(t)).ToList() is { Count: > 0 } invalidos)
+            throw new ArgumentException($"No son tipos de CFE: {string.Join(", ", invalidos)}.");
         var ahora = reloj.GetUtcNow();
         var emisor = new Emisor(nuevo.Rut, nuevo.Denominacion ?? $"Empresa {nuevo.Rut}", nuevo.Mail, nuevo.UrlServicio, nuevo.MailTecnico,
             nuevo.FechaInicio ?? Hora.Fecha(ahora), nuevo.FechaFinTransicion, nuevo.FechaFin, nuevo.Simulado, ahora);
         almacen.GuardarEmisor(emisor);
         var certificado = nuevo.EmitirCertificado ? autoridad.EmitirExportable(emisor.Rut, emisor.Denominacion) : null;
-        return (emisor, certificado);
+        var existentes = almacen.Caes(emisor.Rut);
+        var caes = nuevo.Tipos.Distinct()
+            .Select(t => existentes.FirstOrDefault(c => c.Tipo == t) ?? CrearCae(new NuevoCae { Rut = emisor.Rut, Tipo = t }))
+            .ToList();
+        return (emisor, certificado, caes);
     }
 
     internal string ImportarCertificado(NuevoCertificado nuevo)
@@ -109,6 +137,8 @@ internal sealed class Administracion(Almacen almacen, Autoridad autoridad, IOpti
         return cae;
     }
 
+    internal CaeAutorizado Autorizado(Cae cae) => new(DatosCae.De(cae), Constancia(cae));
+
     /// <summary>La constancia de CAE como la descarga el portal de la DGI (<c>CAE/DA</c>, firmada).</summary>
     internal string Constancia(Cae cae) => Firmas.FirmarEnveloped(XmlUtil.Escribir(w =>
     {
@@ -133,20 +163,6 @@ internal sealed class Administracion(Almacen almacen, Autoridad autoridad, IOpti
         w.WriteEndElement();
     }), autoridad.Dgi);
 
-    /// <summary>El CAE con los nombres de <c>UruFactura.Models.Cae</c>, para cargarlo en un producto .NET.</summary>
-    internal static object DatosCae(Cae cae) => new
-    {
-        numeroAutorizacion = XmlUtil.Numero(cae.Id),
-        tipoCfe = cae.Tipo,
-        serie = cae.Serie,
-        rangoDesde = cae.Desde,
-        rangoHasta = cae.Hasta,
-        fechaAutorizacion = cae.Autorizacion,
-        fechaVencimiento = cae.Vencimiento,
-        especial = cae.Especial,
-        causalEspecial = cae.Causal,
-    };
-
     /// <summary>Carga la semilla configurada. Lo que ya existe se actualiza, así que se puede aplicar en cada arranque.</summary>
     internal void AplicarSemilla()
     {
@@ -156,43 +172,47 @@ internal sealed class Administracion(Almacen almacen, Autoridad autoridad, IOpti
                       ?? new Semilla();
         var directorio = Path.GetDirectoryName(Path.GetFullPath(archivo))!;
         // Un elemento con problemas (un certificado que no está, un RUT inválido) se informa y no impide arrancar.
-        void Aplicar(string que, Action accion)
+        int emisores = 0, certificados = 0, caes = 0;
+        bool Aplicar(string que, Action accion)
         {
             try
             {
                 accion();
+                return true;
             }
             catch (Exception ex) when (ex is ArgumentException or IOException or FormatException or System.Security.Cryptography.CryptographicException)
             {
                 log.LogWarning("Semilla {Archivo}: no se cargó {Que}: {Error}", archivo, que, ex.Message);
+                return false;
             }
         }
         foreach (var emisor in semilla.Emisores)
         {
             // Un emisor que ya tiene certificado no recibe otro en cada arranque.
             var conCertificado = emisor.EmitirCertificado && almacen.Certificados().All(c => c.Rut != emisor.Rut);
-            Aplicar($"el emisor {emisor.Rut}", () => CrearEmisor(new NuevoEmisor
-            {
-                Rut = emisor.Rut, Denominacion = emisor.Denominacion, Mail = emisor.Mail, UrlServicio = emisor.UrlServicio, MailTecnico = emisor.MailTecnico,
-                FechaInicio = emisor.FechaInicio, FechaFinTransicion = emisor.FechaFinTransicion, FechaFin = emisor.FechaFin, Simulado = emisor.Simulado,
-                EmitirCertificado = conCertificado,
-            }));
+            if (Aplicar($"el emisor {emisor.Rut}", () => caes += CrearEmisor(new NuevoEmisor
+                {
+                    Rut = emisor.Rut, Denominacion = emisor.Denominacion, Mail = emisor.Mail, UrlServicio = emisor.UrlServicio, MailTecnico = emisor.MailTecnico,
+                    FechaInicio = emisor.FechaInicio, FechaFinTransicion = emisor.FechaFinTransicion, FechaFin = emisor.FechaFin, Simulado = emisor.Simulado,
+                    EmitirCertificado = conCertificado, Tipos = emisor.Tipos,
+                }).Caes.Count))
+                emisores++;
         }
         foreach (var certificado in semilla.Certificados)
         {
             var archivoCertificado = certificado.Archivo is { Length: > 0 } a ? Path.Combine(directorio, a) : null;
-            Aplicar($"el certificado {certificado.Archivo ?? certificado.Rut}", () => ImportarCertificado(new NuevoCertificado
-            {
-                Archivo = archivoCertificado, Pem = certificado.Pem, Base64 = certificado.Base64, Rut = certificado.Rut, Raiz = certificado.Raiz,
-            }));
+            if (Aplicar($"el certificado {certificado.Archivo ?? certificado.Rut}", () => ImportarCertificado(new NuevoCertificado
+                {
+                    Archivo = archivoCertificado, Pem = certificado.Pem, Base64 = certificado.Base64, Rut = certificado.Rut, Raiz = certificado.Raiz,
+                })))
+                certificados++;
         }
         foreach (var cae in semilla.Caes)
         {
             var existe = cae.Id is null && almacen.Caes(cae.Rut).Any(c => c.Tipo == cae.Tipo && c.Serie == cae.Serie && c.Desde == cae.Desde && c.Hasta == cae.Hasta);
-            if (!existe)
-                Aplicar($"el CAE {cae.Id?.ToString() ?? $"{cae.Tipo} {cae.Serie}"} de {cae.Rut}", () => CrearCae(cae));
+            if (existe || Aplicar($"el CAE {cae.Id?.ToString() ?? $"{cae.Tipo} {cae.Serie}"} de {cae.Rut}", () => CrearCae(cae)))
+                caes++;
         }
-        log.LogInformation("Semilla {Archivo}: {Emisores} emisores, {Certificados} certificados y {Caes} CAE", archivo, semilla.Emisores.Count,
-            semilla.Certificados.Count, semilla.Caes.Count);
+        log.LogInformation("Semilla {Archivo}: {Emisores} emisores, {Certificados} certificados y {Caes} CAE", archivo, emisores, certificados, caes);
     }
 }
