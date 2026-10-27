@@ -39,6 +39,48 @@ public sealed class SobreTests(Simulador sim) : IClassFixture<Simulador>
         Assert.Equal("1", cfes.Buscar("CantCFEAceptados")!.InnerText);
     }
 
+    /// <summary>Saca nodos de la firma de un CFE ya firmado: KeyInfo no entra en lo firmado.</summary>
+    private static XmlDocument SinNodos(string cfeFirmado, params string[] nombres)
+    {
+        var doc = XmlUtil.Cargar(cfeFirmado);
+        foreach (var nodo in nombres.SelectMany(n => doc.DocumentElement.BuscarTodos(n)).ToList())
+            nodo.ParentNode!.RemoveChild(nodo);
+        return doc;
+    }
+
+    [Fact]
+    public async Task FirmaConSoloElSerial_SeVerificaConElCertificadoDeLaCaratula()
+    {
+        // Como el ejemplo de sobre de la DGI: la firma de cada CFE trae X509IssuerSerial y el certificado va en la carátula.
+        var emisor = await sim.Emisor();
+        var cae = sim.Cae(emisor.Rut, 101);
+        var cfe = SinNodos(emisor.Firmar(emisor.Cfe(cae, 1)), "X509Certificate");
+        var (_, cfes) = await sim.Enviar(emisor, cfe.DocumentElement!.OuterXml);
+        Assert.Equal("AE", cfes.Buscar("ACKCFE_Det")!.Texto("Estado"));
+    }
+
+    [Fact]
+    public async Task SerialDeOtroCertificado_S06()
+    {
+        var emisor = await sim.Emisor();
+        var cae = sim.Cae(emisor.Rut, 101);
+        var cfe = SinNodos(emisor.Firmar(emisor.Cfe(cae, 1)), "X509Certificate");
+        cfe.DocumentElement.Buscar("X509SerialNumber")!.InnerText = "12345";
+        var acuse = await sim.EnviarSobre(emisor.Certificado, emisor.Sobre(cfe.DocumentElement!.OuterXml));
+        Assert.Equal(["S06"], Codigos(acuse));
+    }
+
+    [Fact]
+    public async Task FirmaSinIssuerSerial_SeAdvierte()
+    {
+        var emisor = await sim.Emisor();
+        var cae = sim.Cae(emisor.Rut, 101);
+        var cfe = SinNodos(emisor.Firmar(emisor.Cfe(cae, 1)), "X509IssuerSerial");
+        var (_, cfes) = await sim.Enviar(emisor, cfe.DocumentElement!.OuterXml);
+        Assert.Equal("AE", cfes.Buscar("ACKCFE_Det")!.Texto("Estado"));
+        Assert.Contains(sim.Almacen.Cfe(emisor.Rut, 101, "A", 1)!.Advertencias, a => a.Contains("X509IssuerSerial"));
+    }
+
     [Fact]
     public async Task MasDeDosMegas_S07()
     {
@@ -245,5 +287,22 @@ public sealed class DemoraTests(SimuladorConDemora sim) : IClassFixture<Simulado
 
         var cfes = await sim.ConsultarEnvio(emisor.Certificado, acuse);
         Assert.Empty(cfes.BuscarTodos("ACKCFE_Det"));
+    }
+}
+
+/// <summary>A la hora que publica Fechahora (en segundos) el resultado ya está.</summary>
+public sealed class FechahoraTests(SimuladorConDemoraCorta sim) : IClassFixture<SimuladorConDemoraCorta>
+{
+    [Fact]
+    public async Task ALaHoraPublicada_LaRespuestaTraeElDetalle()
+    {
+        var emisor = await sim.Emisor();
+        var cae = sim.Cae(emisor.Rut, 101);
+        var acuse = await sim.EnviarSobre(emisor.Certificado, emisor.Sobre(emisor.Firmar(emisor.Cfe(cae, 1))));
+        var espera = Hora.Leer(acuse.Buscar("Fechahora")!.InnerText)!.Value - DateTimeOffset.UtcNow;
+        if (espera > TimeSpan.Zero)
+            await Task.Delay(espera);
+        var cfes = await sim.ConsultarEnvio(emisor.Certificado, acuse);
+        Assert.Single(cfes.BuscarTodos("ACKCFE_Det"));
     }
 }

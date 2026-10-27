@@ -1,9 +1,11 @@
-FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+# La compilación corre en la arquitectura del runner y publica para la de la imagen (amd64 o arm64).
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:10.0 AS build
+ARG TARGETARCH
 WORKDIR /src
 COPY src/DgiSimulador/DgiSimulador.csproj src/DgiSimulador/
-RUN dotnet restore src/DgiSimulador/DgiSimulador.csproj
+RUN dotnet restore src/DgiSimulador/DgiSimulador.csproj -a $TARGETARCH
 COPY src/ src/
-RUN dotnet publish src/DgiSimulador/DgiSimulador.csproj -c Release -o /app --no-restore
+RUN dotnet publish src/DgiSimulador/DgiSimulador.csproj -c Release -a $TARGETARCH -o /app --no-restore
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app

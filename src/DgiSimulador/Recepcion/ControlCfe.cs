@@ -77,6 +77,9 @@ internal sealed class ControlCfe(Almacen almacen, Autoridad autoridad, IOptions<
             h.Add(new("E04", control.Error!));
         else if (cfe.RutEmisor is { } rut && control.Rut != rut)
             h.Add(new("E04", $"El certificado de la firma es del RUT {control.Rut} y el CFE es del {rut}."));
+        // Zona I: la firma informa el número de serie y el emisor del certificado. No se sabe si la DGI rechaza sin ellos.
+        if (Firmas.SerialIndicado(cfe.Elemento) is null)
+            h.Add(new("E04", "La firma no trae X509IssuerSerial (número de serie y emisor del certificado, zona I del formato).", Confirmado: false));
     }
 
     private static void Formato(CfeLeido cfe, IReadOnlyList<string> erroresXsd, List<Hallazgo> h)
@@ -96,10 +99,16 @@ internal sealed class ControlCfe(Almacen almacen, Autoridad autoridad, IOptions<
             h.Add(new("E05", $"TipoCFE {tipo} ({TiposCfe.Nombre(tipo)}) no va en {TiposCfe.Raiz(familia)}."));
     }
 
-    /// <summary>A-C5 y F-C7: la fecha del comprobante y la de los CFE referenciados no pasan de 60 días después de hoy.</summary>
+    /// <summary>
+    /// A-C5 y F-C7: la fecha del comprobante y la de los CFE referenciados no pasan de 60 días después de hoy. H-C1: la
+    /// firma es del 01/10/2011 en adelante y no pasa de mañana.
+    /// </summary>
     private void Fechas(CfeLeido cfe, List<Hallazgo> h)
     {
-        var limite = Hora.Fecha(reloj.GetUtcNow()).AddDays(60);
+        var hoy = Hora.Fecha(reloj.GetUtcNow());
+        if (cfe.Firma is { } momento && (Hora.Fecha(momento) > hoy.AddDays(1) || Hora.Fecha(momento) < new DateOnly(2011, 10, 1)))
+            h.Add(new("E05", $"TmstFirma {Hora.Formato(momento)} está fuera del rango admitido: del 2011-10-01 a mañana."));
+        var limite = hoy.AddDays(60);
         if (cfe.FechaEmision is { } fecha && fecha > limite)
             h.Add(new("E05", $"FchEmis {Hora.Formato(fecha)} es posterior a hoy + 60 días ({Hora.Formato(limite)})."));
         foreach (var referencia in cfe.Referencias)
@@ -137,8 +146,6 @@ internal sealed class ControlCfe(Almacen almacen, Autoridad autoridad, IOptions<
                 h.Add(new("E07", $"Se firmó el {Hora.Formato(dia)}, después del vencimiento del CAE ({Hora.Formato(cae.Vencimiento)})."));
             else if (dia < cae.Autorizacion)
                 h.Add(new("E07", $"Se firmó el {Hora.Formato(dia)}, antes de la autorización del CAE ({Hora.Formato(cae.Autorizacion)})."));
-            if (firma > reloj.GetUtcNow().AddMinutes(10))
-                h.Add(new("E07", $"La fecha de firma {Hora.Formato(firma)} es posterior a la recepción.", Confirmado: false));
         }
 
         var especial = XmlUtil.Entero(datos.Texto("CAEEspecial"));

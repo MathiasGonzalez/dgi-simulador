@@ -1,5 +1,7 @@
 services:
   dgi-simulador:
+    # La imagen publicada; con `docker compose up --build` se compila desde este repositorio.
+    image: ghcr.io/mathiasgonzalez/dgi-simulador:latest
     build: .
     ports:
       - "8080:8080"

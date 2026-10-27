@@ -24,6 +24,17 @@ builder.Services.AddSingleton<EmisorSimulado>();
 builder.Services.AddSingleton<SetDePruebas>();
 builder.Services.AddSingleton<Administracion>();
 builder.Services.AddHttpClient("intercambio", c => c.Timeout = TimeSpan.FromSeconds(30));
+// Solo la API de administración: el contrato de los servicios SOAP es el WSDL oficial (?wsdl).
+builder.Services.AddOpenApi(o =>
+{
+    o.ShouldInclude = d => d.RelativePath?.StartsWith("admin/", StringComparison.Ordinal) == true;
+    o.AddDocumentTransformer((documento, _, _) =>
+    {
+        documento.Info.Title = "dgi-simulador: administración";
+        documento.Info.Description = "Padrón, certificados y CAE de prueba, inspección de lo recibido, fallas programadas, intercambio y homologación.";
+        return Task.CompletedTask;
+    });
+});
 builder.Services.ConfigureHttpJsonOptions(o => o.SerializerOptions.WriteIndented = true);
 builder.WebHost.ConfigureKestrel(k => k.Limits.MaxRequestBodySize = 64 * 1024 * 1024);
 
@@ -32,6 +43,7 @@ app.Services.GetRequiredService<Administracion>().AplicarSemilla();
 app.MapGet("/", () => Results.Redirect("/admin"));
 ServiciosSoap.Mapear(app);
 AdminApi.Mapear(app);
+app.MapOpenApi();
 app.Run();
 
 /// <summary>Punto de entrada; parcial para las pruebas con <c>WebApplicationFactory</c>.</summary>

@@ -26,4 +26,9 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="EjemplosDgi\**" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\semilla.ejemplo.json" Link="semilla.ejemplo.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
