@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Xml;
 using DgiSimulador.Xml;
 
 namespace DgiSimulador.Recepcion;
@@ -12,7 +13,7 @@ internal sealed record Hallazgo(string Codigo, string Detalle, bool Confirmado =
 /// <summary>
 /// Controles del Formato de los CFE que el XSD no expresa (motivo E05, salvo el tipo de cambio que es E10):
 /// montos de los ítems, totales por indicador de facturación, IVA, total a pagar, retenciones, receptor, referencias
-/// de las notas y documentos. Escritos a partir del formato, sin código de los productos que se prueban.
+/// de las notas y documentos. Escritos a partir del Formato de los CFE v25.2, sin código de los productos que se prueban.
 /// </summary>
 internal sealed class ReglasFormato(OpcionesSimulador opciones)
 {
@@ -51,17 +52,30 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
 
         if (familia is Familia.Remito or Familia.Resguardo)
             return;
+        var cobranzaPropia = cfe.IdDoc.Texto("IndCobPropia") == "1";
         foreach (var item in cfe.Items)
         {
             var linea = item.Texto("NroLinDet");
             var indicador = item.Texto("IndFact");
+            // A-C20: la cobranza propia solo admite ítems no facturables (6 o 7).
+            if (cobranzaPropia && indicador is not ("6" or "7"))
+                h.Add(new("E05", $"Línea {linea}: con IndCobPropia el indicador de facturación tiene que ser 6 o 7 y es {indicador ?? "(ninguno)"}."));
             var informado = XmlUtil.Decimal(item.Texto("MontoItem"));
             var cant = XmlUtil.Decimal(item.Texto("Cantidad"));
             var precio = XmlUtil.Decimal(item.Texto("PrecioUnitario"));
-            if (informado is null || cant is null || precio is null)
-                continue;
-            // Entrega gratuita (5): el monto del ítem no se calcula con el precio.
+            // B-C11: el precio es mayor que cero, salvo en la entrega gratuita (5), que es cero, y en el ítem a rebajar (8).
+            if (precio is { } p0 && (indicador == "5" ? p0 != 0 : indicador == "8" ? p0 < 0 : p0 <= 0))
+                h.Add(new("E05", indicador == "5"
+                    ? $"Línea {linea}: una entrega gratuita (indicador 5) tiene PrecioUnitario 0 y informa {p0.ToString(CultureInfo.InvariantCulture)}."
+                    : $"Línea {linea}: PrecioUnitario {p0.ToString(CultureInfo.InvariantCulture)} tiene que ser mayor que cero."));
+            // B-C24: el monto de una entrega gratuita (5) es cero.
             if (indicador == "5")
+            {
+                if (informado is { } gratuito && gratuito != 0)
+                    h.Add(new("E05", $"Línea {linea}: una entrega gratuita (indicador 5) tiene MontoItem 0 y informa {F(gratuito)}."));
+                continue;
+            }
+            if (informado is null || cant is null || precio is null)
                 continue;
             var esperado = Redondear(cant.Value * precio.Value)
                            - (XmlUtil.Decimal(item.Texto("DescuentoMonto")) ?? 0m)
@@ -80,7 +94,7 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
     /// <summary>A qué total de <c>Totales</c> va el monto de cada indicador de facturación.</summary>
     private static string? CampoDe(string? indicador, Familia familia) => indicador switch
     {
-        "1" => "MntNoGrv",
+        "1" or "16" => "MntNoGrv",
         "2" => "MntNetoIvaTasaMin",
         "3" => "MntNetoIVATasaBasica",
         "4" => "MntNetoIVAOtra",
@@ -116,7 +130,8 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
 
         foreach (var dr in cfe.DescuentosGlobales)
         {
-            if (CampoDe(dr.Texto("IndFactDR"), familia) is not { } campo)
+            var indicador = dr.Texto("IndFactDR");
+            if (CampoDe(indicador, familia) is not { } campo)
                 continue;
             if (dr.Texto("TpoDR") == "2")
             {
@@ -124,17 +139,21 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
                 camposSinControl.Add(campo);
                 continue;
             }
+            // A-C129: sobre los ítems con indicador 7 el descuento suma y el recargo resta.
             var valor = XmlUtil.Decimal(dr.Texto("ValorDR")) ?? 0m;
-            sumas[campo] = sumas.GetValueOrDefault(campo) + (dr.Texto("TpoMovDR") == "D" ? -valor : valor);
+            sumas[campo] = sumas.GetValueOrDefault(campo) + Signo(indicador) * (dr.Texto("TpoMovDR") == "D" ? -valor : valor);
         }
 
+        // A-C113 del e-Remito de Exportación escribe ∑B-C24 − ∑B-C24 (si B-C4=8) y no aclara si la primera suma incluye
+        // los ítems a rebajar: con ítems a rebajar el total se advierte.
+        var hayRebajas = familia == Familia.RemitoExportacion && cfe.Items.Any(i => i.Texto("IndFact") == "8");
         var brutos = cfe.MontosBrutos == 1;
         foreach (var (campo, suma) in sumas)
         {
             if (camposSinControl.Contains(campo))
                 continue;
             var esperado = suma;
-            var confirmado = true;
+            var confirmado = !(hayRebajas && campo == "MntExpoyAsim");
             if (brutos && campo is "MntNetoIvaTasaMin" or "MntNetoIVATasaBasica")
             {
                 // Con precios con IVA incluido el neto es el bruto dividido (1 + tasa): el redondeo no está confirmado.
@@ -152,6 +171,12 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
         Iva(cfe, "MntNetoIvaTasaMin", "IVATasaMin", "MntIVATasaMin", opciones.TasaMinima, h);
         Iva(cfe, "MntNetoIVATasaBasica", "IVATasaBasica", "MntIVATasaBasica", opciones.TasaBasica, h);
 
+        // A-C118 y A-C123: el neto y el IVA a otra tasa van juntos.
+        var netoOtra = cfe.Monto("MntNetoIVAOtra");
+        var ivaOtra = cfe.Monto("MntIVAOtra");
+        if (netoOtra > 0 != ivaOtra > 0)
+            h.Add(new("E05", $"MntNetoIVAOtra ({F(netoOtra)}) y MntIVAOtra ({F(ivaOtra)}) tienen que ser los dos mayores que cero o ninguno."));
+
         var total = cfe.MontoInformado("MntTotal");
         if (total is { } t && familia != Familia.Resguardo)
         {
@@ -160,13 +185,23 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
                 h.Add(new("E05", $"MntTotal informa {F(t)} y la suma de los montos netos, no gravados e IVA da {F(componentes)}."));
         }
 
+        // A-C20: la cobranza propia no lleva descuentos ni recargos globales, e informa MontoNF y MntPagar.
+        if (cfe.IdDoc.Texto("IndCobPropia") == "1")
+        {
+            if (cfe.DescuentosGlobales.Count > 0)
+                h.Add(new("E05", "Con IndCobPropia no puede haber descuentos ni recargos globales."));
+            if (cfe.MontoInformado("MontoNF") is null || cfe.MontoInformado("MntPagar") is null)
+                h.Add(new("E05", "Con IndCobPropia tienen que estar MontoNF y MntPagar."));
+        }
+
         if (cfe.MontoInformado("MntPagar") is { } pagar && total is { } mntTotal)
         {
-            var retenido = cfe.Monto("MntTotRetenido");
-            var esperado = mntTotal + retenido + cfe.Monto("MontoNF");
-            if (Math.Abs(esperado - pagar) > Tolerancia)
-                h.Add(new("E05", $"MntPagar informa {F(pagar)} y MntTotal + MntTotRetenido + MontoNF da {F(esperado)}.",
-                    Confirmado: retenido == 0));
+            // A-C130: MntTotal + MntTotRetenido + MontoNF, o cero si esa suma es negativa. En la e-Boleta de entrada con
+            // montos con IMEBA y adicionales (MntBruto 2) la retención resta.
+            var resta = familia == Familia.Boleta && cfe.MontosBrutos == 2;
+            var esperado = mntTotal + (resta ? -1 : 1) * cfe.Monto("MntTotRetenido") + cfe.Monto("MontoNF");
+            if (Math.Abs(esperado - pagar) > Tolerancia && !(esperado < 0 && pagar == 0))
+                h.Add(new("E05", $"MntPagar informa {F(pagar)} y MntTotal {(resta ? "−" : "+")} MntTotRetenido + MontoNF da {F(esperado)}."));
         }
     }
 
@@ -217,11 +252,18 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
                 h.Add(new("E05", $"La retención o percepción {codigo} suma {F(items)} en los ítems y {F(informado)} en los totales.",
                     Confirmado: !hayAnulaciones));
         }
+        // A-C125 y A-C125.1: los códigos del formulario 2181 son créditos fiscales y van en MntTotCredFisc.
         var retenido = cfe.Monto("MntTotRetenido");
-        var suma = totales.Values.Sum();
+        var suma = totales.Where(t => !EsCreditoFiscal(t.Key)).Sum(t => t.Value);
         if (Math.Abs(retenido - suma) > Tolerancia)
-            h.Add(new("E05", $"MntTotRetenido informa {F(retenido)} y la suma de RetencPercep de los totales da {F(suma)}."));
+            h.Add(new("E05", $"MntTotRetenido informa {F(retenido)} y la suma de RetencPercep de los totales, sin los créditos fiscales (2181), da {F(suma)}."));
+        var credito = cfe.Monto("MntTotCredFisc");
+        var sumaCredito = totales.Where(t => EsCreditoFiscal(t.Key)).Sum(t => t.Value);
+        if (Math.Abs(credito - sumaCredito) > Tolerancia)
+            h.Add(new("E05", $"MntTotCredFisc informa {F(credito)} y la suma de los créditos fiscales (2181) de los totales da {F(sumaCredito)}."));
     }
+
+    private static bool EsCreditoFiscal(string codigo) => codigo.StartsWith("2181", StringComparison.Ordinal);
 
     // --- Receptor -----------------------------------------------------------------------------
 
@@ -235,21 +277,72 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
         if (tipoDoc == "3" && doc is not null && !Documentos.CiValida(doc))
             h.Add(new("E05", $"La cédula del receptor {doc} no tiene un dígito verificador válido."));
 
-        if (familia == Familia.Factura)
+        // A-C61, A-C62 y A-C62.1: el país y el número que corresponden a cada tipo de documento.
+        var pais = r.Texto("CodPaisRecep");
+        if (tipoDoc is "1" or "2" or "3")
         {
-            if (tipoDoc != "2" || doc is null)
-                h.Add(new("E05", "La e-Factura requiere un receptor con RUC (TipoDocRecep 2 y DocRecep)."));
-            foreach (var campo in new[] { "RznSocRecep", "DirRecep", "CiudadRecep" })
-                if (string.IsNullOrWhiteSpace(r.Texto(campo)))
-                    h.Add(new("E05", $"La e-Factura requiere {campo} del receptor."));
+            if (pais is not null && pais != "UY")
+                h.Add(new("E05", $"Con TipoDocRecep {tipoDoc} CodPaisRecep tiene que ser UY y es {pais}."));
+            if (doc is null)
+                h.Add(new("E05", $"Con TipoDocRecep {tipoDoc} falta DocRecep."));
+        }
+        else if (tipoDoc is "4" or "5" or "6" or "7")
+        {
+            if (tipoDoc == "6" && pais is not null && pais is not ("AR" or "BR" or "CL" or "PY"))
+                h.Add(new("E05", $"Con TipoDocRecep 6 (DNI) CodPaisRecep tiene que ser AR, BR, CL o PY y es {pais}."));
+            if (r.Texto("DocRecepExt") is null)
+                h.Add(new("E05", $"Con TipoDocRecep {tipoDoc} falta DocRecepExt."));
         }
 
-        if (familia == Familia.Exportacion && (r is null || string.IsNullOrWhiteSpace(r.Texto("RznSocRecep"))))
-            h.Add(new("E05", "La e-Factura de Exportación requiere la razón social del receptor.", Confirmado: false));
+        // A-C18: con secreto profesional no se exigen los datos del receptor.
+        if (cfe.IdDoc.Texto("SecProf") is "1" or "2")
+            return;
 
-        if (familia == Familia.Ticket && TopeUi(cfe) is { } tope && cfe.Neto * (cfe.TipoCambio ?? 1m) > tope && (tipoDoc is null || cfe.DocReceptor is null))
-            h.Add(new("E05", $"El e-Ticket supera el tope de 5.000 UI ({F(tope)} pesos netos) y no identifica al receptor."));
+        var nombre = cfe.Tipo is { } t ? TiposCfe.Nombre(t) : TiposCfe.Raiz(familia);
+        var identificado = tipoDoc is not null && cfe.DocReceptor is not null;
+        switch (familia)
+        {
+            case Familia.Factura:
+                if (tipoDoc != "2" || doc is null)
+                    h.Add(new("E05", $"{nombre} requiere un receptor con RUC (TipoDocRecep 2 y DocRecep)."));
+                Exigir(r, nombre, h, "RznSocRecep", "DirRecep", "CiudadRecep");
+                break;
+            case Familia.Exportacion or Familia.RemitoExportacion:
+                Exigir(r, nombre, h, "RznSocRecep", "DirRecep", "CiudadRecep", "DeptoRecep", "PaisRecep");
+                break;
+            case Familia.Remito or Familia.Resguardo:
+                if (!identificado)
+                    h.Add(new("E05", $"{nombre} requiere identificar al receptor (TipoDocRecep y documento)."));
+                if (familia == Familia.Resguardo)
+                    Exigir(r, nombre, h, "RznSocRecep");
+                break;
+            case Familia.Ticket when !identificado:
+                // Tabla E: con retenciones o percepciones, o por encima del tope de 5.000 UI, se identifica al receptor.
+                if (cfe.Totales.Hijos("RetencPercep").Any() || cfe.Items.Any(i => i.Hijos("RetencPercep").Any()))
+                    h.Add(new("E05", $"{nombre} documenta retenciones o percepciones y no identifica al receptor."));
+                else if (TopeUi(cfe) is { } tope && NetoEnPesos(cfe) > tope)
+                    h.Add(new("E05", $"{nombre} supera el tope de 5.000 UI ({F(tope)} pesos netos) y no identifica al receptor."));
+                break;
+            case Familia.Boleta:
+                // Compra de moneda extranjera para reventa (A-C21) de un receptor sin RUC, por debajo del tope: no se identifica.
+                if (cfe.IdDoc.Texto("IndCompraMEReventa") is "1" or "2" && tipoDoc != "2"
+                    && (TopeUi(cfe) is not { } topeBoleta || NetoEnPesos(cfe) <= topeBoleta))
+                    break;
+                if (!identificado)
+                    h.Add(new("E05", $"{nombre} requiere identificar al receptor (TipoDocRecep y documento)."));
+                Exigir(r, nombre, h, "RznSocRecep", "DirRecep", "CiudadRecep");
+                break;
+        }
     }
+
+    private static void Exigir(XmlElement? receptor, string comprobante, List<Hallazgo> h, params string[] campos)
+    {
+        foreach (var campo in campos)
+            if (string.IsNullOrWhiteSpace(receptor.Texto(campo)))
+                h.Add(new("E05", $"{comprobante} requiere {campo} del receptor."));
+    }
+
+    private static decimal NetoEnPesos(CfeLeido cfe) => cfe.Neto * (cfe.TipoCambio ?? 1m);
 
     /// <summary>5.000 UI al valor del 31/12 del año anterior al comprobante, si está configurado.</summary>
     private decimal? TopeUi(CfeLeido cfe)
@@ -266,19 +359,37 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
     {
         if (cfe.Tipo is { } tipo && TiposCfe.EsNota(tipo) && cfe.Referencias.Count == 0)
             h.Add(new("E05", "Las notas de crédito y débito requieren la zona de referencia al CFE que corrigen."));
+        // A-C20: la cobranza propia referencia los comprobantes que cobra.
+        if (cfe.IdDoc.Texto("IndCobPropia") == "1" && cfe.Referencias.Count == 0)
+            h.Add(new("E05", "Con IndCobPropia hay que referenciar los comprobantes que se cobran."));
 
+        var referenciados = new HashSet<(string, string, long)>();
         foreach (var referencia in cfe.Referencias)
         {
-            var global = referencia.Texto("IndGlobal") == "1";
-            var especifica = referencia.Texto("TpoDocRef") is not null || referencia.Texto("NroCFERef") is not null;
-            if (global && especifica)
-                h.Add(new("E05", $"La referencia {referencia.Texto("NroLinRef")} es global (IndGlobal) y también indica un CFE."));
-            if (!global && (referencia.Texto("TpoDocRef") is null || referencia.Texto("Serie") is null || referencia.Texto("NroCFERef") is null))
-                h.Add(new("E05", $"La referencia {referencia.Texto("NroLinRef")} no es global y le falta el tipo, la serie o el número del CFE."));
-            if (global && string.IsNullOrWhiteSpace(referencia.Texto("RazonRef")))
-                h.Add(new("E05", $"La referencia global {referencia.Texto("NroLinRef")} requiere RazonRef.", Confirmado: false));
+            var linea = referencia.Texto("NroLinRef");
+            if (referencia.Texto("IndGlobal") == "1")
+            {
+                // F-C3 a F-C5 y F-C7 a F-C10 no van en una referencia global, que explica el motivo en RazonRef (F-C6).
+                var sobran = CamposDelCfeReferenciado.Where(c => referencia.Texto(c) is not null).ToList();
+                if (sobran.Count > 0)
+                    h.Add(new("E05", $"La referencia {linea} es global (IndGlobal) y también informa {string.Join(", ", sobran)}."));
+                if (string.IsNullOrWhiteSpace(referencia.Texto("RazonRef")))
+                    h.Add(new("E05", $"La referencia global {linea} requiere RazonRef."));
+                continue;
+            }
+            if (referencia.Texto("TpoDocRef") is not { } tipoRef || referencia.Texto("Serie") is not { } serie
+                || XmlUtil.Entero(referencia.Texto("NroCFERef")) is not { } nro)
+                h.Add(new("E05", $"La referencia {linea} no es global y le falta el tipo, la serie o el número del CFE."));
+            else if (!referenciados.Add((tipoRef, serie, nro)))
+                h.Add(new("E05", $"La referencia {linea} repite el CFE {tipoRef} {serie}{nro} de otra línea."));
+            // F-C10: obligatorio si el CFE referenciado no es en pesos.
+            if (referencia.Texto("TpoMonedaRef") is { } moneda && moneda != "UYU" && referencia.Texto("TpoCambioRef") is null)
+                h.Add(new("E05", $"La referencia {linea} es a un CFE en {moneda} y no informa TpoCambioRef."));
         }
     }
+
+    private static readonly string[] CamposDelCfeReferenciado =
+        ["TpoDocRef", "Serie", "NroCFERef", "FechaCFEref", "MntCFEref", "TpoMonedaRef", "TpoCambioRef"];
 
     private void TipoDeCambio(CfeLeido cfe, List<Hallazgo> h)
     {

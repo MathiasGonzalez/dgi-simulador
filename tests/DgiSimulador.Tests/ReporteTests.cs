@@ -69,6 +69,17 @@ public sealed class ReporteTests(Simulador sim) : IClassFixture<Simulador>
     }
 
     [Fact]
+    public async Task MasDeDosMegas_NoSeRechazaPorTamano()
+    {
+        // El tope de 2 MB es del sobre: el Formato del Reporte no fija uno.
+        var emisor = await sim.Emisor();
+        var acuse = await sim.EnviarReporte(emisor.Certificado, new string('x', 3 * 1024 * 1024));
+        var motivo = Assert.Single(acuse.BuscarTodos("MotivosRechazo"));
+        Assert.Equal("R01", motivo.Texto("Motivo"));
+        Assert.StartsWith("No es XML", motivo.Texto("Detalle"));
+    }
+
+    [Fact]
     public async Task SecuenciaQueNoSigue_R05()
     {
         var (emisor, _) = await EmisorConETicket();

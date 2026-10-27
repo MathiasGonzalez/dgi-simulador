@@ -37,8 +37,8 @@ internal sealed class RecepcionReporte(Almacen almacen, Autoridad autoridad, Fal
         int? secuencia = null;
         XmlElement? reporte = null;
 
-        if (Encoding.UTF8.GetByteCount(xml) > _opciones.TamanoMaximoKb * 1024L)
-            motivos.Add(Motivos.DeReporte("R01", $"El reporte supera el tamaño máximo configurado ({_opciones.TamanoMaximoKb} KB)."));
+        if (Encoding.UTF8.GetByteCount(xml) > _opciones.TamanoMaximoReporteKb * 1024L)
+            motivos.Add(Motivos.DeReporte("R01", $"El reporte supera el tamaño máximo configurado ({_opciones.TamanoMaximoReporteKb} KB)."));
         else if (!XmlUtil.TryCargar(xml, out var doc, out var error))
             motivos.Add(Motivos.DeReporte("R01", $"No es XML: {error}"));
         else if (doc.DocumentElement is not { LocalName: "Reporte", NamespaceURI: Ns.Cfe } raiz)

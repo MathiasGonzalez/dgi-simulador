@@ -199,6 +199,38 @@ public sealed class CfeTests(Simulador sim) : IClassFixture<Simulador>
     }
 
     [Fact]
+    public async Task ReferenciaQueNoCoincideConElCfe_E12()
+    {
+        var emisor = await sim.Emisor();
+        var cae = sim.Cae(emisor.Rut, 101);
+        var caeNota = sim.Cae(emisor.Rut, 102);
+        Assert.Equal("AE", (await Resultado(emisor, emisor.Cfe(cae, 5))).Texto("Estado"));
+
+        // F-C7 a F-C9: fecha y moneda del e-Ticket A5, y un monto que no supera su total a pagar (122).
+        GeneradorCfe Nota(long nro, DateOnly fecha, string monto) => emisor.Cfe(caeNota, nro) with
+        {
+            Referencias = [new ReferenciaCfe(101, "A", 5, "Devolución")],
+            Modificar = doc =>
+            {
+                var referencia = doc.DocumentElement.Buscar("Referencia")!.Hijo("Referencia")!;
+                foreach (var (nombre, valor) in new[] { ("FechaCFEref", Hora.Formato(fecha)), ("MntCFEref", monto), ("TpoMonedaRef", "UYU") })
+                    referencia.AppendChild(doc.CreateElement(nombre, Ns.Cfe))!.InnerText = valor;
+            },
+        };
+        Assert.Equal("AE", (await Resultado(emisor, Nota(1, EmisorPrueba.Hoy, "50.00"))).Texto("Estado"));
+        Assert.Equal(["E12"], Motivos(await Resultado(emisor, Nota(2, EmisorPrueba.Hoy.AddDays(-1), "50.00"))));
+        Assert.Equal(["E12"], Motivos(await Resultado(emisor, Nota(3, EmisorPrueba.Hoy, "500.00"))));
+    }
+
+    [Fact]
+    public async Task FechaMasDeSesentaDiasAdelante_E05()
+    {
+        var emisor = await sim.Emisor();
+        var cae = sim.Cae(emisor.Rut, 101);
+        Assert.Equal(["E05"], Motivos(await Resultado(emisor, emisor.Cfe(cae, 1) with { Fecha = EmisorPrueba.Hoy.AddDays(61) })));
+    }
+
+    [Fact]
     public async Task ContingenciaConProblemas_QuedaObservada()
     {
         var emisor = await sim.Emisor();

@@ -3,9 +3,9 @@ using DgiSimulador.Estado;
 namespace DgiSimulador;
 
 /// <summary>
-/// Códigos de rechazo y observación con sus glosas oficiales. Las glosas son las enumeraciones de <c>Glosa</c> en
-/// <c>DGITypes.xsd</c> (el esquema solo admite esas), asociadas a los códigos en el orden en que aparecen: los
-/// comentarios del mismo XSD traen una numeración anterior que no coincide con las glosas.
+/// Códigos de rechazo y observación con sus glosas oficiales: las tablas 4.1 a 4.4 del Formato de los Mensajes de
+/// Respuesta v19, que coinciden con las enumeraciones de <c>Glosa</c> en <c>DGITypes.xsd</c> (el esquema solo admite
+/// esas). Donde el texto de la tabla y el del XSD difieren (C09) se usa el del XSD.
 /// </summary>
 internal static class Motivos
 {

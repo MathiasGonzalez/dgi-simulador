@@ -30,8 +30,14 @@ public sealed class OpcionesSimulador
     /// <summary>Diferencia admitida al comparar montos calculados con los informados.</summary>
     public decimal Tolerancia { get; set; } = 0.01m;
 
-    /// <summary>Tamaño máximo de un sobre o reporte, en KB (S07). La DGI no publica el valor.</summary>
-    public int TamanoMaximoKb { get; set; } = 10_240;
+    /// <summary>Tamaño máximo de un sobre, en KB (S07). El Formato del Sobre v05 fija 2 MB.</summary>
+    public int TamanoMaximoKb { get; set; } = 2_048;
+
+    /// <summary>
+    /// Tamaño máximo de un reporte diario, en KB (R01). El Formato del Reporte no fija uno: es solo una protección del
+    /// simulador.
+    /// </summary>
+    public int TamanoMaximoReporteKb { get; set; } = 10_240;
 
     /// <summary>
     /// Qué certificados se aceptan: <c>Registrados</c> (emitidos por la CA del simulador o importados) o

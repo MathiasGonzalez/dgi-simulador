@@ -40,6 +40,23 @@ public sealed class SobreTests(Simulador sim) : IClassFixture<Simulador>
     }
 
     [Fact]
+    public async Task MasDeDosMegas_S07()
+    {
+        // Formato del Sobre v05: tamaño máximo 2 MB. El tamaño se controla antes que el XML.
+        var emisor = await sim.Emisor();
+        var acuse = await sim.EnviarSobre(emisor.Certificado, new string('x', 2 * 1024 * 1024 + 1));
+        Assert.Equal(["S07"], Codigos(acuse));
+    }
+
+    [Fact]
+    public async Task HastaDosMegas_NoEsS07()
+    {
+        var emisor = await sim.Emisor();
+        var acuse = await sim.EnviarSobre(emisor.Certificado, new string('x', 2 * 1024 * 1024));
+        Assert.Equal(["S01"], Codigos(acuse));
+    }
+
+    [Fact]
     public async Task NoEsXml_S01()
     {
         var emisor = await sim.Emisor();

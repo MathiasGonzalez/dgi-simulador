@@ -61,7 +61,7 @@ Para CI conviene cargar todo al arrancar con una semilla. Hay un ejemplo en [sem
 
 ## Controles
 
-Los códigos y las glosas son los oficiales: las enumeraciones de `Glosa` en `DGITypes.xsd`.
+Los controles siguen los documentos vigentes de la DGI: Formato CFE v25.2, Formato del Sobre v05, Formato del Reporte v13.2 y Formato de los Mensajes de Respuesta v19. Los códigos y las glosas son los de las tablas de ese último documento, que coinciden con las enumeraciones de `Glosa` en `DGITypes.xsd`.
 
 | Etapa | Control | Código |
 |---|---|---|
@@ -72,20 +72,20 @@ Los códigos y las glosas son los oficiales: las enumeraciones de `Glosa` en `DG
 | | XSD de la carátula y `RutReceptor` | S04 |
 | | `CantCFE` contra el contenido | S05 |
 | | Certificado de la carátula contra el de las firmas de los CFE | S06 |
-| | Tamaño (`TamanoMaximoKb`) | S07 |
+| | Más de 2 MB (`TamanoMaximoKb`) | S07 |
 | | Sobre ya recibido (mismo RUT e `Idemisor`) | S08 |
 | CFE | Número informado como anulado en un reporte | E01 |
 | | Número ya recibido, o repetido en el sobre | E02 |
 | | Serie, número, rango o vencimiento distintos de los del CAE | E03 |
 | | Firma XMLDSig y certificado del emisor | E04 |
-| | XSD y reglas del formato: montos de los ítems, totales por indicador, IVA, `MntTotal`, `MntPagar`, retenciones, receptor de la e-Factura, tope de 5.000 UI, referencias de las notas, dígitos verificadores | E05 |
+| | XSD y reglas del formato. Ítems: monto, precio y entrega gratuita. Totales: por indicador con descuentos y recargos globales, IVA, `MntTotal`, `MntPagar`, retenciones y créditos fiscales. Receptor: datos obligatorios de cada tipo, país y número del documento, secreto profesional, e-Ticket por encima de 5.000 UI o con retenciones. También cobranza propia, referencias, fechas hasta 60 días adelante y dígitos verificadores | E05 |
 | | Total en pesos mayor que `MontoHabitualMaximo` | E06 |
 | | Firmado fuera de la vigencia del CAE | E07 |
 | | RUC del complemento fiscal | E08 |
 | | CAE inexistente, de otro RUT o de otro tipo | E09 |
 | | Tipo de cambio que falta o fuera de rango | E10 |
 | | CAE especial y causal | E11, E13 |
-| | Referencia a un CFE que la DGI no tiene aceptado | E12 |
+| | Referencia a un CFE que la DGI no tiene aceptado, o con fecha, moneda o tipo de cambio distintos, o con un monto mayor que su total a pagar | E12 |
 | Contingencia (2xx) | Con problemas que tienen observación equivalente: CE con `ObsCFC` (C03…C15) | CE |
 | Reporte | No es XML o la raíz no es `Reporte` | R01 |
 | | RUC del reporte, de la firma y del envío | R02 |
@@ -97,7 +97,7 @@ Los códigos y las glosas son los oficiales: las enumeraciones de `Glosa` en `DG
 **Rechazos y advertencias.** Las reglas que la normativa no deja claras se anotan como **advertencias** y no rechazan. Son estas:
 - el redondeo con precios con IVA incluido (`MntBruto=1`);
 - los porcentajes globales;
-- `MntPagar` con retenciones;
+- los totales con ítems a rebajar del e-Remito de Exportación (indicador 8) y con anulaciones del e-Resguardo (indicador 9). El formato escribe "∑B-C24 − ∑B-C24 (si B-C4=8)" y no aclara si la primera suma incluye esos ítems;
 - la consistencia del reporte con los CFE del día: cantidades, rangos y montos.
 
 Las advertencias se ven en `/admin` y en el checklist. Con `Simulador__Estricto=true` rechazan como las demás.
@@ -154,7 +154,8 @@ El set incluido ([set-pruebas.json](src/DgiSimulador/Homologacion/set-pruebas.js
 | `DemoraConsultaSegundos` | 2 | Desde cuándo se puede consultar el resultado de un sobre (`Fechahora`) |
 | `Estricto` | false | Las advertencias rechazan |
 | `Tolerancia` | 0.01 | Diferencia admitida en los montos |
-| `TamanoMaximoKb` | 10240 | Máximo de un sobre o reporte (S07) |
+| `TamanoMaximoKb` | 2048 | Máximo de un sobre (S07): 2 MB según el Formato del Sobre v05 |
+| `TamanoMaximoReporteKb` | 10240 | Máximo de un reporte (R01). La DGI no publica uno |
 | `Confianza` | `Registrados` | `Cualquiera` acepta cualquier certificado vigente con RUT |
 | `RutsDgi` | 214844360018 y 219999830019 | `RutReceptor` aceptados en el sobre |
 | `UnidadIndexada__{año}` | — | UI al 31/12, para el tope de 5.000 UI del año siguiente |
@@ -169,12 +170,11 @@ El set incluido ([set-pruebas.json](src/DgiSimulador/Homologacion/set-pruebas.js
 
 Cuando la DGI responda distinto que el simulador para el mismo XML, agregá el caso como prueba de regresión, con la respuesta real anonimizada, y corregí el simulador.
 
-- **Glosas de los motivos.** Se asociaron a los códigos en el orden de las enumeraciones del XSD. Los comentarios del mismo XSD traen una numeración anterior que no coincide.
-- **`RutReceptor` del sobre en el ambiente de prueba.** Hay productos que usan 214844360018 y otros que usan 219999830019, el "RUT de DGI de pruebas". El simulador acepta los dos.
+- **`RutReceptor` del sobre en el ambiente de prueba.** Hay productos que usan 214844360018 y otros que usan 219999830019, el "RUT de DGI de pruebas". El simulador acepta los dos. El ejemplo de invocación a ePrueba del documento "Servicios Web Externos" usa 214844360018. El sobre de ejemplo de la DGI usa 219999830019, pero como emisor y receptor a la vez, así que no lo resuelve.
 - **`EFACCONSULTARESTADOENVIO` antes de `Fechahora`.** Se responde la carátula sin `ACKCFE_Det`. El XSD exige al menos un detalle, así que la DGI debe responder otra cosa.
-- **`EstadoCFE` de `EFACCONSULTARESTADOCFE`.** Se devuelve el estado del comprobante (AE, BE o CE). El WSDL no lo define.
 - **Contingencia.** Con problemas que tienen equivalente en `ObsCFC` queda CE; si no, BE.
-- **Tamaño máximo del sobre.** La DGI no lo publica.
+- **Diferencias con el CFE referenciado.** El formato exige que fecha, moneda y tipo de cambio de la referencia (F-C7, F-C9 y F-C10) sean los del CFE referenciado, y que el monto (F-C8) no supere su total a pagar. No dice con qué motivo se rechaza; el simulador usa E12.
+- **Tamaño máximo.** "2 Mega" se toma como 2048 KB; si la DGI cuenta 2.000.000 bytes, el margen es de 48 KB. El reporte no tiene un máximo publicado.
 - **Validador de .NET.** No admite enteros de más de 29 dígitos en `xs:integer`. El simulador ignora ese error en `ds:X509SerialNumber`, que en los certificados reales tiene 38 dígitos.
 
 ## Desarrollo
@@ -184,3 +184,4 @@ dotnet test DgiSimulador.slnx
 ```
 
 Las pruebas levantan el simulador en memoria, cada clase con su propia base temporal. Para probar un producto de punta a punta, levantá el simulador con `dotnet run --project src/DgiSimulador`, que escucha en `http://localhost:8080` (se cambia con `Urls`), y apuntá el producto ahí.
+
