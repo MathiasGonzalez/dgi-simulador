@@ -223,6 +223,14 @@ public sealed class CfeTests(Simulador sim) : IClassFixture<Simulador>
     }
 
     [Fact]
+    public async Task FirmaDeMasDeUnDiaAdelante_E05()
+    {
+        var emisor = await sim.Emisor();
+        var cae = sim.Cae(emisor.Rut, 101);
+        Assert.Equal(["E05"], Motivos(await Resultado(emisor, emisor.Cfe(cae, 1) with { Firma = DateTimeOffset.UtcNow.AddDays(2) })));
+    }
+
+    [Fact]
     public async Task FechaMasDeSesentaDiasAdelante_E05()
     {
         var emisor = await sim.Emisor();

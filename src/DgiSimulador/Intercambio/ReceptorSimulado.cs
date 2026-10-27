@@ -139,8 +139,9 @@ internal sealed class ReceptorSimulado(
             }
 
             var cfes = items.Select(i => i.Hijo("CFE")).ToList();
-            var firmas = cfes.Select(c => c is null ? Firma.Invalida("Falta el CFE.") : Firmas.VerificarEnveloped(c)).ToList();
-            if (certificado is not null && firmas.Any(f => f.Certificado is { } c && c.Thumbprint != certificado.Thumbprint))
+            var firmas = cfes.Select(c => c is null ? Firma.Invalida("Falta el CFE.") : Firmas.VerificarEnveloped(c, certificado)).ToList();
+            if (certificado is not null && (firmas.Any(f => f.Certificado is { } c && c.Thumbprint != certificado.Thumbprint)
+                                            || cfes.Any(c => c is not null && Firmas.SerialIndicado(c) is { } serial && serial != Firmas.Serial(certificado))))
                 motivos.Add(Motivos.DeSobre("S06"));
             if (cfes.Any(c => c is not null && CfeLeido.Leer(c).RutEmisor != rutEmisor))
                 motivos.Add(Motivos.DeSobre("S02", "Hay CFE de otro RUC que el de la carátula."));

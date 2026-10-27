@@ -51,7 +51,8 @@ internal sealed class RecepcionSobre(
             rutEmisor = caratula.Texto("RUCEmisor") ?? rutEmisor;
             idEmisor = XmlUtil.Entero(caratula.Texto("Idemisor")) ?? 0;
             elementos = [.. raiz.Hijos("CFE").Where(e => e.NamespaceURI == Ns.Cfe)];
-            firmas = [.. elementos.Select(Firmas.VerificarEnveloped)];
+            var certificadoCaratula = Firmas.Leer(caratula.Texto("X509Certificate"));
+            firmas = [.. elementos.Select(e => Firmas.VerificarEnveloped(e, certificadoCaratula))];
 
             var errores = Esquemas.Validar(xml, Esquemas.Documento.Sobre);
             foreach (var e in errores.Where(e => e.Ordinal > 0))
@@ -71,7 +72,8 @@ internal sealed class RecepcionSobre(
         {
             token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(24));
             var demora = fallas.Negocio(Operacion, "demora")?.Segundos ?? _opciones.DemoraConsultaSegundos;
-            consultarDesde = ahora.AddSeconds(demora);
+            // Fechahora se publica en segundos: el resultado está desde ese segundo, no desde la fracción que no se ve.
+            consultarDesde = Hora.AlSegundo(ahora.AddSeconds(demora));
         }
 
         var caratulaAcuse = new Caratula(RutReceptorDe(xml), rutEmisor, almacen.Siguiente("respuestas"), NombreSobre(rutEmisor, ahora, idEmisor),
@@ -125,7 +127,9 @@ internal sealed class RecepcionSobre(
 
         if (certificado is not null)
         {
-            var distintos = firmas.Select((f, i) => (f, i)).Where(x => x.f.Certificado is { } c && c.Thumbprint != certificado.Thumbprint)
+            var distintos = firmas.Select((f, i) => (f, i))
+                .Where(x => x.f.Certificado is { } c && c.Thumbprint != certificado.Thumbprint
+                            || Firmas.SerialIndicado(elementos[x.i]) is { } serial && serial != Firmas.Serial(certificado))
                 .Select(x => x.i + 1).ToList();
             if (distintos.Count > 0)
                 motivos.Add(Motivos.DeSobre("S06", $"Los CFE {string.Join(", ", distintos)} están firmados con otro certificado que el de la carátula."));

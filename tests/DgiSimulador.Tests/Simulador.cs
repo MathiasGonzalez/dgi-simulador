@@ -183,3 +183,5 @@ public sealed class SimuladorEstricto() : Simulador(new() { ["Simulador:Estricto
 public sealed class SimuladorChico() : Simulador(new() { ["Simulador:TamanoMaximoKb"] = "1" });
 
 public sealed class SimuladorConDemora() : Simulador(new() { ["Simulador:DemoraConsultaSegundos"] = "3600" });
+
+public sealed class SimuladorConDemoraCorta() : Simulador(new() { ["Simulador:DemoraConsultaSegundos"] = "1" });

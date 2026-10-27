@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Numerics;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
@@ -23,9 +25,12 @@ internal static class Firmas
 
     /// <summary>
     /// Verifica la firma enveloped de <paramref name="elemento"/> tal como se firmó: como documento propio, con los
-    /// namespaces que tenía en el documento que lo contiene.
+    /// namespaces que tenía en el documento que lo contiene. La firma de un CFE puede traer solo el número de serie y
+    /// el emisor del certificado (zona I del formato, <c>X509IssuerSerial</c>): entonces se verifica con
+    /// <paramref name="certificadoDelSobre"/>, el de la carátula, que según el Formato del Sobre es el que valida las
+    /// firmas de los CFE.
     /// </summary>
-    internal static Firma VerificarEnveloped(XmlElement elemento)
+    internal static Firma VerificarEnveloped(XmlElement elemento, X509Certificate2? certificadoDelSobre = null)
     {
         XmlDocument doc;
         try
@@ -61,9 +66,11 @@ internal static class Firmas
         if (!Enumerable.Range(0, transformaciones.Count).Any(i => transformaciones[i] is XmlDsigEnvelopedSignatureTransform))
             return Firma.Invalida("La referencia no tiene la transformación enveloped-signature.");
 
-        var certificado = CertificadoDe(firma);
+        var certificado = CertificadoDe(firma) ?? certificadoDelSobre;
         if (certificado is null)
             return Firma.Invalida("La firma no trae el certificado (KeyInfo/X509Data/X509Certificate).");
+        if (SerialDe(firma) is { } serial && serial != Serial(certificado))
+            return Firma.Invalida($"X509IssuerSerial indica el certificado con número de serie {serial} y el de la firma tiene el {Serial(certificado)}.");
 
         try
         {
@@ -93,8 +100,12 @@ internal static class Firmas
         referencia.AddTransform(new XmlDsigC14NTransform());
         signedXml.AddReference(referencia);
 
+        // El certificado y, como en los ejemplos de la DGI, su número de serie y emisor (zona I del formato). El "0"
+        // evita que AddIssuerSerial lea como negativo un serial hexadecimal que empieza con 8 a F.
+        var x509 = new KeyInfoX509Data(certificado);
+        x509.AddIssuerSerial(certificado.Issuer, "0" + certificado.SerialNumber);
         var keyInfo = new KeyInfo();
-        keyInfo.AddClause(new KeyInfoX509Data(certificado));
+        keyInfo.AddClause(x509);
         signedXml.KeyInfo = keyInfo;
 
         signedXml.ComputeSignature();
@@ -231,20 +242,36 @@ internal static class Firmas
     }
 
     /// <summary>El certificado de <c>KeyInfo/X509Data</c> de una firma (el primero que traiga).</summary>
-    internal static X509Certificate2? CertificadoDe(XmlElement firma)
+    internal static X509Certificate2? CertificadoDe(XmlElement firma) =>
+        Leer(firma.BuscarTodos("X509Certificate").FirstOrDefault(e => e.NamespaceURI == Ns.Ds)?.InnerText);
+
+    /// <summary>Un certificado en base64, o <c>null</c> si no lo es.</summary>
+    internal static X509Certificate2? Leer(string? base64)
     {
-        var nodo = firma.BuscarTodos("X509Certificate").FirstOrDefault(e => e.NamespaceURI == Ns.Ds);
-        if (nodo is null)
+        if (string.IsNullOrWhiteSpace(base64))
             return null;
         try
         {
-            return X509CertificateLoader.LoadCertificate(Convert.FromBase64String(nodo.InnerText.Trim()));
+            return X509CertificateLoader.LoadCertificate(Convert.FromBase64String(base64.Trim()));
         }
         catch (Exception ex) when (ex is FormatException or CryptographicException)
         {
             return null;
         }
     }
+
+    /// <summary>El número de serie que indica <c>X509IssuerSerial</c> en la firma de <paramref name="documento"/>, si lo trae.</summary>
+    internal static BigInteger? SerialIndicado(XmlElement documento) =>
+        documento.Hijos("Signature").FirstOrDefault(e => e.NamespaceURI == Ns.Ds) is { } firma ? SerialDe(firma) : null;
+
+    private static BigInteger? SerialDe(XmlElement firma) =>
+        firma.BuscarTodos("X509SerialNumber").FirstOrDefault(e => e.NamespaceURI == Ns.Ds) is { } nodo
+        && BigInteger.TryParse(nodo.InnerText.Trim(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var serial)
+            ? serial
+            : null;
+
+    /// <summary>El número de serie del certificado como entero sin signo (en <c>X509SerialNumber</c> va en decimal).</summary>
+    internal static BigInteger Serial(X509Certificate2 certificado) => new(certificado.SerialNumberBytes.Span, isUnsigned: true, isBigEndian: true);
 
     /// <summary><see cref="SignedXml"/> que resuelve las referencias por <c>wsu:Id</c>, como usa WS-Security.</summary>
     private sealed class SignedXmlWsu(XmlDocument doc) : SignedXml(doc)

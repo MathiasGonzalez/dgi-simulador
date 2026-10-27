@@ -17,6 +17,9 @@ internal static class Hora
 
     internal static string Formato(DateOnly fecha) => fecha.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
+    /// <summary>El momento sin la fracción de segundo (los mensajes de la DGI no llevan fracciones).</summary>
+    internal static DateTimeOffset AlSegundo(DateTimeOffset momento) => momento.AddTicks(-(momento.Ticks % TimeSpan.TicksPerSecond));
+
     /// <summary>Una fecha y hora de un mensaje; sin offset es hora de Uruguay.</summary>
     internal static DateTimeOffset? Leer(string? texto)
     {

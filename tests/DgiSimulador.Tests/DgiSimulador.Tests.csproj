@@ -26,4 +26,8 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="EjemplosDgi\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>
