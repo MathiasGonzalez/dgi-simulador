@@ -1,0 +1,234 @@
+Factura Electronica - Documentos de interés
+Inicio
+Información General
+Normativa
+Sobre e-Factura
+Noticias
+Principal > Factura Electronica
+Contenido a enviar:
+dgife
+Documentos de interés
+FORMATO
+APLICACIÓN testing
+APLICACIÓN producción
+CFE
+Formato CFE v23.3.pdf
+Sustituido
+Sustituido
+Formato CFE v24.pdf
+Sustituido
+Publicado
+Formato CFE v25.pdf
+Sustituido
+Sustituido
+Formato CFE v25.1.pdf
+Sustituido
+Sustituido
+Formato CFE v25.2.pdf
+Publicado
+Publicado
+SOBRE
+Formato_Sobre_v04.pdf
+Sustituido
+Sustituido
+Formato_Sobre_v05.pdf
+Publicado
+Publicado
+REPORTE DIARIO
+Formato Reporte CFE v12.pdf
+Sustituido
+Sustituido
+Formato Reporte CFE v13.pdf
+Sustituido
+Sustituido
+Formato Reporte CFE v13 1.pdf
+Sustituido
+Sustituido
+Formato Reporte CFE v13 2.pdf
+Publicado
+Publicado
+MENSAJE de RESPUESTA
+Formato Mensajes Respuesta v15.pdf
+Sustituido
+Sustituido
+Formato Mensajes Respuesta v16.pdf
+Sustituido
+Sustituido
+Formato Mensajes Respuesta v17.pdf
+Sustituido
+Sustituido
+Formato Mensajes Respuesta v18.pdf
+Sustituido
+Publicado
+Formato Mensajes Respuesta v19.pdf
+Publicado
+Publicado
+CAE
+Formato_CAE_v03.pdf
+Sustituido
+Sustituido
+Formato_CAE_v04.pdf
+Sustituido
+Sustituido
+Formato_CAE_v05.pdf
+Publicado
+Publicado
+XSD
+XSDs_FE_V1.43.3(archivo.zip)
+Sustituido
+Sustituido
+XSDs_FE_V1.43.5(archivo.zip)
+Sustituido
+Publicado
+XSDs_FE_V1.44.0(archivo.zip)
+Sustituido
+Sustituido
+XSDs_FE_V1.44.1(archivo.zip)
+Sustituido
+Sustituido
+XSDs_FE_V1.44.2(archivo.zip)
+Publicado
+Publicado
+PROVEEDORES DE SOLUCIONES DE SW
+Formato_Envío de Información Proveedores de SW_v1.0.pdf
+Sustituido
+Formato_Envío de Información Proveedores de SW_v1.1.pdf
+Sustituido
+Formato_Envío de Información Proveedores de SW_v1.2.pdf
+Sustituido
+Formato_Envío de Información Proveedores de SW_v1.3.pdf
+Publicado
+XSD
+XSD_Formato_Envío de Información Proveedores de SW_v1.0.7 (archivo.zip)
+Sustituido
+XSD_Formato_Envío de Información Proveedores de SW_v1.0.8 (archivo.zip)
+Sustituido
+XSD_Formato_Envío de Información Proveedores de SW_v1.5.0 (archivo.zip)
+Sustituido
+XSD_Formato_Envío de Información Proveedores de SW_v1.5.1 (archivo.zip)
+Sustituido
+XSD_Formato_Envío de Información Proveedores de SW_v1.5.2 (archivo.zip)
+Publicado
+ESTÁNDAR DE INTERCAMBIO ENTRE EMISORES
+Respuesta Servicios-WS_Intercambio.xsd
+wsdl_con_WS-Security_aws_efactura_intercambio.xml
+aws_efactura_intercambio.xsd1.xsd
+Estándar de intercambio entre emisores a través de servicios Web (archivo .pdf 7.63MB)
+WS SOLICITUDES (ACTUALIZACIÓN CONTACTOS)
+ws solicitud (wsdl)
+Servicios Solicitudes eFactura 1.0 (archivo .pdf 449KB)
+Códigos de retenciones/percepciones
+Actualización 27.07.2026 .
+Cálculo dígito verificador códigos GTIN
+Actualización 02.05.2022.
+Documentos técnicos de División Informática
+Guías en el uso de XMLEncryption
+Documento Técnico de División Informática (514 KB)
+Web Services Externos Recepción
+Web Services Externos Consultas
+Web Services Consulta de RUT
+WS_eFactura.wsdl
+Ejemplo de Sobre (archivo .xml 27Kb)
+Ejemplo de Reporte (archivo .xml 14 Kb)
+Ejemplo de constancias de autorización para emisión de CFE (archivo .zip 10 Kb)
+Ejemplo de Sobre – Factura Cuenta Ajena con complemento fiscal encriptado (archivo .xml 9 Kb)
+Ejemplo de Sobre – Factura Cuenta Ajena con complemento fiscal NO encriptado (archivo .xml 8 Kb)
+Instructivo Reporte de Incidentes (archivo .pdf 822 KB)
+Instructivo Registro de Proveedores Habilitados (archivo .pdf 301 KB)
+Clave Pública para ambiente de Producción
+Clave Pública para ambiente de Prueba (válida hasta el 18/09/2024)
+C lave Pública para ambiente de Prueba (válida desde del 19/09/2024 )
+Sustituido
+Publicado
+Nombre remitente
+E-mail remitente
+Nombre del destinatario
+E-mail del destinatario
+Mensaje personal
+Documentos de interés Contenido no disponible Mensaje enviado Faltan datos requeridos Contenido agregado con éxito le envía un Artículo. le envía este mensaje: https://www.efactura.dgi.gub.uy/frontend//principal/ampliacion_de_contenido/documentos-de-interes?es
+R.U.T.:
+C.I.:
+Clave:
+1
+Contador de Documentos
+Consultas
+INFORMACION GENERAL
+Documentos de interés
+Definiciones funcionales CFE
+Instructivos
+Preguntas Frecuentes
+Proveedores de certificado digital
+Beneficios fiscales para contribuyentes de menor capacidad económica
+NORMATIVA
+Leyes
+Decretos
+Resoluciones
+SOBRE E-FACTURA
+Emisores Autorizados
+Proveedores de Software inscriptos en el "Registro de Proveedor Habilitado"
+Proveedores de Software
+NOTICIAS
+Ver todas las noticias
+DESTACADOS
+Beneficios fiscales para contribuyentes de menor capacidad económica
+DIRECCIÓN GENERAL IMPOSITIVA. Av. Daniel Fernández Crespo 1534, CP 11200 - Montevideo, Uruguay. Tel. 1344.
+Horario: 9:30 a 16:15hs.
+Versiones mínimas para navegar correctamente en los portales y aplicaciones Web: Chrome 33, Firefox 34, Edge todas las versiones, Internet Explorer 11, Safari 8
+
+## Enlaces
+https://www.efactura.dgi.gub.uy/files/DocumentoServiciosWebExternos?es
+https://www.efactura.dgi.gub.uy/files/Formato_CAE_v03.pdf?es
+https://www.efactura.dgi.gub.uy/files/Formato_CAE_v04.pdf?es
+https://www.efactura.dgi.gub.uy/files/Formato_CAE_v05-pdf?es
+https://www.efactura.dgi.gub.uy/files/Formato_Sobre_v04_pdf?es
+https://www.efactura.dgi.gub.uy/files/Formato_Sobre_v05_pdf?es
+https://www.efactura.dgi.gub.uy/files/Instructivo_registro_proveedor?es
+https://www.efactura.dgi.gub.uy/files/aws_efactura_intercambio_xsd1_xsd?es
+https://www.efactura.dgi.gub.uy/files/calculo-digito-verificador-codigos-gtin-25444?es
+https://www.efactura.dgi.gub.uy/files/clave-publica-para-ambiente-de-prueba?es
+https://www.efactura.dgi.gub.uy/files/clave_ambiente_prueba_19_09_24?es
+https://www.efactura.dgi.gub.uy/files/clave_publica_produccion?es
+https://www.efactura.dgi.gub.uy/files/codigos-de-retenciones-percepciones?es
+https://www.efactura.dgi.gub.uy/files/descripcion-e-factura-archivo-pdf-263-kb?es
+https://www.efactura.dgi.gub.uy/files/documento-tecnico-de-division-informatica-archivo-pdf-514-kb?es
+https://www.efactura.dgi.gub.uy/files/ejemplo-de-reporte?es
+https://www.efactura.dgi.gub.uy/files/ejemplo-de-sobre--factura-cuenta-ajena-con-complemento-fiscal-encriptado?es
+https://www.efactura.dgi.gub.uy/files/ejemplo-de-sobre--factura-cuenta-ajena-con-complemento-fiscal-no-encriptado?es
+https://www.efactura.dgi.gub.uy/files/ejemplo-de-sobre?es
+https://www.efactura.dgi.gub.uy/files/ejemplos-de-constancias-de-autorizacion-para-emision-de-comprobantes-fiscales-electronicos?es
+https://www.efactura.dgi.gub.uy/files/estandar-de-intercambio-entre-emisores-a-traves-de-servicios-web?es
+https://www.efactura.dgi.gub.uy/files/formato_cfe_v23_3-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_cfe_v24-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_cfe_v25-1-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_cfe_v25-2-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_cfe_v25-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_mensajes_respuesta_v15-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_mensajes_respuesta_v16-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_mensajes_respuesta_v17-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_mensajes_respuesta_v18-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_mensajes_respuesta_v19-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_proveedores_software_v1-0-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_proveedores_software_v1-1-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_proveedores_software_v1-2-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_proveedores_software_v1-3-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_reporte_cfe_v12-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_reporte_cfe_v13-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_reporte_cfe_v13_1-pdf?es
+https://www.efactura.dgi.gub.uy/files/formato_reporte_cfe_v13_2-pdf?es
+https://www.efactura.dgi.gub.uy/files/guias-en-el-uso-de-xmlencryption-11062014-pdf?es
+https://www.efactura.dgi.gub.uy/files/instructivo-reporte-de-incidentes?es
+https://www.efactura.dgi.gub.uy/files/respuesta-servicios-ws-intercambio--xsd?es
+https://www.efactura.dgi.gub.uy/files/servicios-solicitudes-efactura-1-0-archivo-pdf?es
+https://www.efactura.dgi.gub.uy/files/web-services-consulta-de-rut?es
+https://www.efactura.dgi.gub.uy/files/web-services-externos-consultas-pdf?es
+https://www.efactura.dgi.gub.uy/files/wsdl_aws_efactura_intercambio.xml?es
+https://www.efactura.dgi.gub.uy/files/xsd_efacinfoprov_1_0_7-zip?es
+https://www.efactura.dgi.gub.uy/files/xsd_efacinfoprov_1_0_8-zip?es
+https://www.efactura.dgi.gub.uy/files/xsd_efacinfoprov_1_5_0-zip?es
+https://www.efactura.dgi.gub.uy/files/xsd_efacinfoprov_1_5_1-zip?es
+https://www.efactura.dgi.gub.uy/files/xsd_efacinfoprov_1_5_2-zip?es
+https://www.efactura.dgi.gub.uy/files/xsds_fe_1_43_3-zip?es
+https://www.efactura.dgi.gub.uy/files/xsds_fe_1_43_5-zip?es
+https://www.efactura.dgi.gub.uy/files/xsds_fe_1_44_0-zip?es
+https://www.efactura.dgi.gub.uy/files/xsds_fe_1_44_1-zip?es
+https://www.efactura.dgi.gub.uy/files/xsds_fe_1_44_2-zip?es

@@ -1,0 +1,386 @@
+Resolución DGI de Interés General N° 798/012
+Volver
+Resolución DGI de Interés General N° 798/012
+DOCUMENTACIÓN FISCAL ELECTRÓNICA -SE ESTABLECEN LAS CONDICIONES QUE REGULEN SU RÉGIMEN.
+Fuente del Texto: DGI
+Ver Original
+1
+RESOLUCIÓN D.G.I. Nº 798/2012
+DOCUMENTACIÓN FISCAL ELECTRÓNICA –SE ESTABLECEN LAS CONDICIONES QUE REGULEN SU RÉGIMEN.
+Montevideo, 8 de mayo de 2012
+Visto: la Ley Nº 18.600 de 21 de setiembre de 2009 y el Decreto Nº 36/012 de 8 de febrero de 2012.
+Resultando: I) Que la citada norma legal reconoce la validez y la eficacia jurídica de los documentos electrónicos y la firma electrónica;
+II) Que el mencionado decreto comete a la Dirección General Impositiva el dictado de normas complementarias a efectos de la adecuada implementación del régimen de documentación mediante comprobantes fiscales electrónicos.
+Considerando: necesario establecer las condiciones que regulen el régimen de los referidos documentos.
+Atento: a lo expuesto y a que se cuenta con la conformidad del Ministerio de Economía y Finanzas;
+El Director General de Rentas
+RESUELVE:
+1º) Comprobantes incluidos.- El régimen previsto en el Decreto Nº 36/012 de 8 de febrero de 2012, comprende los comprobantes fiscales electrónicos (CFE) que se definen a continuación:
+a) e-Factura: comprobante fiscal electrónico utilizado para documentar operaciones con contribuyentes. A esos efectos, se entenderá por tales aquellos identificados mediante número de RUC.
+No obstante, en las operaciones propias de actividades económicas que deban preceptivamente documentarse a consumo final de acuerdo a la normativa vigente, se utilizarán e-Tickets.
+NOTA: El inciso segundo del literal a) fue sustituido por la Resolución DGI Nº 2075/2021 de 08.12.021, numeral 1º. Vigencia: 01.02.022, numeral 5º). (D. Of. 09.12.021 UM).
+b) Nota de Crédito de e-Factura: comprobante fiscal electrónico utilizado para documentar ajustes a la baja o anulaciones, en relación a operaciones previamente documentadas en e-Facturas.
+c) Nota de Débito de e-Factura: comprobante fiscal electrónico utilizado para documentar ajustes al alza en relación a operaciones previamente documentadas en e-Facturas.
+d) e-Ticket: comprobante fiscal electrónico utilizado para documentar operaciones con consumidores finales.
+A los solos efectos de la utilización de este comprobante, se consideran incluidas en el concepto de consumidores finales, aquellas entidades no residentes que no cuenten con número de RUT.
+NOTA: Este segundo inciso fue agregado por la Resolución DGI Nº 2.886/2014 de 22.08.014, numeral 1º.
+e) Nota de Crédito de e-Ticket: comprobante fiscal electrónico utilizado para documentar ajustes a la baja o anulaciones, en relación a operaciones previamente documentadas en e-Tickets.
+f) Nota de Débito de e-Ticket: comprobante fiscal electrónico utilizado para documentar ajustes al alza en relación a operaciones previamente documentadas en e-Tickets.
+g) e-Remito: comprobante fiscal electrónico utilizado para documentar el movimiento físico de bienes.
+h) e-Resguardo: comprobante fiscal electrónico utilizado para respaldar retenciones y percepciones de impuestos realizadas por los sujetos pasivos responsables.
+A partir del 1º de agosto de 2024 este comprobante también se utilizará en aquellos casos en que la normativa vigente disponga la comunicación de créditos fiscales a otros contribuyentes.
+Cuando la normativa establezca que las retenciones deben constar en la documentación que respalda la operación, las mismas deberán figurar en el correspondiente CFE, no requiriéndose la emisión de e-Resguardo.
+Tampoco se requerirá la emisión de e-Resguardo cuando las percepciones consten en el CFE que respalda la operación.
+NOTA: Este literal fue sustituido por Resolución DGI Nº 821/024 de 16.04.024, numeral 4º.
+i) e-Factura de Exportación: comprobante fiscal electrónico utilizado para documentar operaciones de exportación de bienes.
+NOTA: El apartado i) fue agregado por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 1º).
+El uso de este documento tendrá carácter opcional cuando se documenten exportaciones de servicios.
+NOTA: Este segundo inciso fue agregado por la Resolución DGI Nº 2.886/2014 de 22.08.014, numeral 2º).
+j) Nota de Crédito de e-Factura de Exportación: comprobante fiscal electrónico utilizado para documentar ajustes a la baja o anulaciones, en relación a operaciones previamente documentadas en e-Facturas de Exportación.
+NOTA: El apartado j) fue agregado por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 1º).
+k) Nota de Débito de e-Factura de Exportación: comprobante fiscal electrónico utilizado para documentar ajustes al alza en relación a operaciones previamente documentadas en e-Facturas de Exportación.
+NOTA: El apartado k) fue agregado por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 1º).
+l) e-Remito de Exportación: comprobante fiscal electrónico valorado, utilizado para documentar el movimiento físico de bienes en la exportación.
+NOTA: El apartado l) fue agregado por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 1º).
+m) e-Boleta de Entrada: comprobante fiscal electrónico utilizado por los adquirentes para documentar:
+a- operaciones de compra a un vendedor no emisor electrónico, siempre y cuando no sea preceptiva la documentación de dicha operación, pudiéndose además documentar retenciones y percepciones correspondientes a la misma.
+b- operaciones de compra de moneda extranjera que esté destinada a la reventa, cuando la contrapartida sea la entrega de moneda local; documentadas a partir del 1º de octubre de 2021.
+En aquellos casos en que el vendedor documente la operación no corresponderá la emisión de e-Boleta de Entrada.
+NOTA: El literal m) fue sustituido por la Resolución DGI Nº 277/2021 de 18.02.021, numeral 1º (D.Of. 19.02.021 UM).
+n) Nota de crédito de e- Boleta de Entrada: comprobante fiscal electrónico utilizado para documentar ajustes a la baja o anulaciones, en relación a operaciones previamente documentadas en e-Boletas de Entrada.
+NOTA: El literal fue agregado por la Resolución DGI Nº 2.438/2017 de 4.05.017, numeral 1º).
+ñ) Nota de débito de e- Boleta de Entrada: comprobante fiscal electrónico utilizado para documentar ajustes al alza en relación a operaciones previamente documentadas en e-Boletas de Entrada.
+NOTA: El literal fue agregado por la Resolución DGI Nº 2.438/2017 de 4.05.017, numeral 1º).
+2º) Sujetos comprendidos.- Quedan incluidos en el presente régimen aquellos sujetos pasivos de impuestos administrados por la Dirección General Impositiva:
+a. cuya solicitud de incorporación sea aprobada por la Administración, o
+b. sean notificados respecto a su incorporación preceptiva.
+3º) Incorporación opcional.- Los sujetos pasivos que pretendan quedar incluidos en el presente régimen, deberán solicitar autorización a la Dirección General Impositiva a través del Portal e-Factura del sitio web de la institución, indicando los comprobantes fiscales electrónicos por los que solicitan adherirse.
+La mencionada autorización estará supeditada al cumplimiento, por parte del contribuyente, de los requisitos que la Administración considere necesarios en cada caso.
+Una vez que el postulante haya dado cumplimiento a los requisitos exigidos, la Administración le comunicará su inclusión en el régimen, así como los CFE que le fueron autorizados. La referida inclusión se efectivizará el día siguiente a aquel en que se verifique la comunicación.
+NOTA: Este inciso 3° fue sustituido por la Resolución DGI Nº 1.184/2020 de 06.07.020, numeral 1º) (D.Of. 07.07.020).
+Similar procedimiento deberán seguir aquellos sujetos pasivos que, habiendo sido habilitados a operar en el régimen por determinados comprobantes, pretendan ampliar el elenco de los documentos autorizados.
+A partir de su inclusión en el régimen, los sujetos pasivos adquirirán la calidad de receptor electrónico y dispondrán de un plazo de cuatro meses para documentar sus operaciones exclusivamente mediante los CFE que les hubiesen sido autorizados. Para quienes queden incluidos en el régimen a partir del 1° de enero de 2024, el plazo referido en el presente inciso será de un mes.
+NOTA: Este inciso quinto fue sustituido por la Resolución DGI Nº 2.390/2023 de 17.11.023, numeral 1º) (D.Of. 20.11.023 U.M.).
+El conjunto mínimo de CFE con los que se puede ingresar en el sistema está compuesto por la e-Factura y el e-Ticket, con sus correspondientes notas de corrección. No obstante, los sujetos pasivos no contribuyentes del Impuesto al Valor Agregado ni del Impuesto a las Rentas de las Actividades Económicas, podrán solicitar ingresar exclusivamente para la emisión de e-Resguardos.
+El conjunto mínimo de CFE con que pueden ingresar al sistema los exportadores de bienes que soliciten el mismo a partir del 1º de enero de 2015, incluirá además de los comprobantes establecidos en el inciso anterior, los referidos en los apartados i) a l) del numeral 1º.
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 2.958/2014 de 28.08.014, numeral 1º).
+Los emisores electrónicos que se constituyan en exportadores de bienes, dispondrán de 90 días contados a partir de la primera operación, para solicitar incluir en el régimen de CFE, los comprobantes previstos en los apartados i) a l) del numeral 1°. A partir del 1º de mayo de 2024 los referidos emisores electrónicos deberán certificar los comprobantes previstos en el presente numeral, de forma previa a la primera operación.
+NOTA: Este inciso octavo fue sustituido por la Resolución DGI Nº 2.390/2023 de 17.11.023, numeral 2º) (D.Of. 20.11.023 (U.M.).
+Las empresas a las que se conceda autorización para operar en el régimen del Decreto Nº 367/995 de 4 de octubre de 1995 o como tiendas destinadas a la venta de mercaderías nacionales y extranjeras libres de impuestos a los pasajeros que salen del país, a los que se hallan en tránsito o a los que ingresan al país (Tax Free Shops), dispondrán de 90 días desde la fecha de dicha autorización, para postularse al régimen de CFE.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 2.886/2014 de 22.08.014, numeral 3º). queda derogado por Resolución DGI Nº 5.195/2015 de 30.12.015, numerales 4º y 5º. Vigencia: 1º.01.016.
+El conjunto mínimo de CFE con que pueden ingresar al sistema los sujetos pasivos responsables que soliciten el mismo a partir del 1º de abril de 2016, incluirá además de los comprobantes establecidos en el inciso sexto del presente numeral, el referido en el apartado h) del numeral 1º. Exceptúese de lo dispuesto en este inciso a los responsables que detenten dicha calidad exclusivamente por retenciones o percepciones que constan en el CFE que respalda la operación de venta.
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 1.569/2016 de 08.04.016, numeral 2º).
+Los emisores electrónicos que se constituyan en responsables, dispondrán de 90 días a partir de la primera retención o percepción efectuada, para solicitar incluir en el régimen de CFE, el comprobante previsto en el apartado h) del numeral 1º. A partir del 1º de mayo de 2024, los referidos emisores electrónicos deberán certificar el citado comprobante, de forma previa a la retención o percepción. Exceptúese de lo dispuesto precedentemente, y exclusivamente por los comprobantes que se enuncian a continuación, a los responsables que documenten las retenciones o percepciones en otro CFE, así como los que emitan los documentos establecidos en el literal c) del inciso tercero y en el inciso quinto del numeral 9 de la Resolución Nº 662/2007 de 29 de junio de 2007; en el literal c) del inciso tercero y en el inciso quinto del numeral 10º de la Resolución Nº 981/2007 de 28 de agosto de 2007; en el numeral 7º de la Resolución Nº 1.213/2008 de 5 de agosto de 2008.
+NOTA: Este inciso décimo fue sustituido por la Resolución DGI Nº 2.390/2023 de 17.11.023, numeral 3º) (D.Of. 20.11.023 U.M.).
+El conjunto mínimo de CFE con que pueden ingresar al sistema quienes realicen operaciones comprendidas en la Resolución Nº 1643/2014 de 21 de mayo de 2014, a partir del 1º de abril de 2016, incluirá además de los comprobantes establecidos en el inciso sexto del presente numeral, los previstos en el numeral 4º de dicha resolución.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 4.393/2015 de 11.11.015, numeral 1º).
+Los emisores electrónicos que realicen operaciones comprendidas en la Resolución N° 1.643/2014 de 21 de mayo de 2014, dispondrán de 90 días desde la fecha en que empiecen a operar en esa modalidad, para solicitar incluir en el régimen de CFE, los comprobantes referidos en el numeral 4° de dicha resolución. A partir del 1° de mayo de 2024, quienes realicen las operaciones mencionadas, deberán certificar los comprobantes correspondientes, de forma previa a efectuar dichas operaciones.
+NOTA: Este inciso décimo segundo fue sustituido por la Resolución DGI Nº 2.390/2023 de 17.11.023, numeral 4º) (D.Of. 20.11.023 U.M.).
+El conjunto mínimo de CFE con que pueden ingresar al sistema quienes documenten operaciones comprendidas en el artículo 54º del Decreto 597/988 de 21 de setiembre de 1988, a partir del 1º de diciembre de 2017, incluirá además de los comprobantes establecidos en el inciso sexto, los referidos en los apartados m, n y ñ del numeral 1º.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 2.438/2017 de 4.05.017, numeral 2º).
+Los emisores electrónicos que documenten operaciones comprendidas en el artículo citado en el inciso anterior, dispondrán de 90 días desde la fecha en que empiecen a operar en esa modalidad, para solicitar incluir en el régimen de CFE, los comprobantes referidos en los apartados m, n y ñ del numeral 1°). A partir del 1° de mayo de 2024, quienes realicen dichas operaciones, deberán certificar los comprobantes mencionados, de forma previa a efectuar las mismas.
+NOTA: Este inciso décimo cuarto fue sustituido por la Resolución DGI Nº 2.390/2023 de 17.11.023, numeral 5º) (D.Of. 20.11.023 U.M)
+4º) Incorporación preceptiva.- Los sujetos pasivos incluidos preceptivamente en el presente régimen deberán cumplir con los requisitos necesarios para operar en el mismo en el plazo que se estipule en la correspondiente comunicación.
+A tales efectos, deberán seguir el procedimiento establecido en el numeral precedente.
+Las empresas a las que se conceda autorización para operar en el régimen del Decreto Nº 367/995 de 4 de octubre de 1995 o como tiendas destinadas a la venta de mercaderías nacionales y extranjeras libres de impuestos a los pasajeros que salen del país, a los que se hallan en tránsito o a los que ingresan al país (Tax Free Shops), dispondrán de 90 días desde la fecha de dicha autorización, para postularse al régimen de CFE. A partir del 1º de mayo de 2024, las referidas empresas deberán tener la calidad de emisores electrónicos desde que se conceda dicha autorización.
+Los contribuyentes que comiencen a realizar actividades de elaboración de harina de trigo y otros productos de su molienda, incluso quienes realicen servicios de façon para la elaboración de dichos productos y aquellos que resulten prestatarios de los mismos, dispondrán de 90 días contados a partir de la primera operación, para postularse al régimen de CFE. A partir del 1º de mayo de 2024, los referidos contribuyentes deberán tener la calidad de emisores electrónicos en forma previa a la realización de la primera operación.
+Las entidades que comiencen a desarrollar actividades que cumplan con el alcance objetivo y subjetivo de las exoneraciones dispuestas por el artículo 161 bis del Decreto Nº 150/007 de 26 de abril de 2007, dispondrán de 90 días desde el inicio de tales actividades, para postularse al régimen de comprobantes fiscales electrónicos. A partir del 1º de mayo de 2024, las referidas entidades deberán tener la calidad de emisores electrónicos en forma previa a la realización de las mencionadas actividades.
+Los desarrolladores, usuarios y terceros no usuarios de zona franca que comiencen a realizar las actividades establecidas en el literal b) del artículo 13 del Decreto Nº 309/018 de 27 de setiembre de 2018, dispondrán de 90 días desde la autorización, expresa o tácita, de la Dirección Nacional de Zonas Francas o del Poder Ejecutivo, cuando corresponda, para postularse al régimen de CFE. A partir del 1º de mayo de 2024, los desarrolladores, usuarios y terceros no usuarios de zona franca deberán tener la calidad de emisores electrónicos desde que se conceda la mencionada autorización.
+Las empresas que comiencen a realizar la actividad de cobranza de carteras morosas a usuarios de zonas francas, dispondrán de 90 días desde el inicio de la referida actividad, para postularse al régimen de CFE. A partir del 1º de mayo de 2024, las referidas empresas deberán tener la calidad de emisores electrónicos en forma previa a la realización de las mencionadas actividades.
+Las entidades que comiencen a desarrollar actividades que cumplan con el alcance objetivo y subjetivo de las exoneraciones dispuestas por el artículo 162 Bis del Decreto Nº 150/007 de 26 de abril de 2007, dispondrán de 90 días desde el inicio de tales actividades, para postularse al régimen de comprobantes fiscales electrónicos. A partir del 1º de mayo de 2024, las referidas entidades deberán tener la calidad de emisores electrónicos en forma previa a la realización de las mencionadas actividades.
+A partir del 1º de enero de 2025, los contribuyentes del IVA, incluso quienes tributen IVA mínimo, deberán adquirir la calidad de emisor electrónico desde que se inscriban, reinicien actividades, o se constituyan en contribuyentes del mencionado impuesto.
+NOTA: Este inciso noveno fue sustituido por la Resolución DGI Nº 2.548 de 30.11.023, numeral 4º) (D.Of. 01.12.023 U.M.).
+Lo dispuesto en el inciso anterior no será de aplicación para:
+a) los contribuyentes que desarrollen exclusivamente actividades agropecuarias y obtengan en el ejercicio ingresos inferiores a UI 4.000.000 (cuatro millones de unidades indexadas) valuadas a la cotización del último día del ejercicio fiscal correspondiente,
+b) quienes realicen exclusivamente los actos gravados a que refiere el literal D) del artículo 2º del Título 10 del Texto Ordenado 2023 (agregación de valor en la construcción sobre inmuebles),
+Nota: Este literal fue sustituido por la Resolución DGI Nº 798/025 de 24.04.025, numeral 1º (D.Of. 25.04.025 U.M.).
+c) los contribuyentes del Impuesto a las Rentas de los No Residentes,
+d) los contribuyentes exonerados de impuestos administrados por la DGI por todas sus operaciones, excepto los usuarios directos e indirectos de zona franca,
+e) los contribuyentes del Monotributo, del Monotributo Social Mides y del Aporte Social Único de PPL.
+Los contribuyentes comprendidos en el literal a) del inciso anterior que superen el importe establecido en el mismo deberán adquirir la calidad de emisor electrónico a partir del primer día del quinto mes posterior al cierre del ejercicio en que se produzca tal hecho.
+NOTA: Este numeral fue sustituido por la Resolución DGI Nº 2.390/2023 de 17.11.023, numeral 6º) (D.Of. 20.11.023).
+5º) Emisor/receptor electrónico.- Es emisor electrónico el sujeto autorizado por la Dirección General Impositiva para documentar operaciones, mediante CFE.
+Todo emisor electrónico es, preceptivamente, receptor electrónico.
+6º) Certificado electrónico reconocido vigente.- Los emisores electrónicos solamente podrán utilizar, a efectos del presente régimen, certificados electrónicos reconocidos vigentes, expedidos por un prestador de servicios de certificación acreditado ante la Unidad de Certificación Electrónica e inscripto en el Registro de Prestadores de Servicios de Certificación acreditados de acuerdo a lo establecido en la Ley Nº 18.600 de 21 de setiembre de 2009.
+No obstante lo dispuesto precedentemente, y hasta tanto no se encuentre operativo el registro antes mencionado, se considerarán válidos aquellos certificados emitidos por la Administración Nacional de Correos.
+7º) Documentación de operaciones.- Una vez iniciada la emisión de CFE de acuerdo a lo previsto en la correspondiente comunicación y en el quinto inciso del numeral 3° de la presente, los sujetos pasivos documentarán sus operaciones exclusivamente a través de los CFE que les hubieran sido autorizados, en los casos que corresponda, y sin perjuicio de las situaciones de contingencia a que refiere el numeral 17º de la presente Resolución.
+NOTA: Este inciso 1º fue sustituido por la Resolución DGI Nº 9.834/2018 de 26.10.018, numeral 2º) (D.Of. 29.10.018).
+En relación a estas operaciones, los adquirentes o retenidos no podrán exigir que las mismas sean documentadas mediante comprobantes no incluidos en el presente régimen.
+Aquellas operaciones que no corresponda documentar mediante CFE, continuarán rigiéndose por las normas generales de documentación.
+8º) Representación impresa.- Cuando se verifiquen operaciones con receptores no electrónicos o que impliquen el movimiento físico de bienes, los emisores electrónicos deberán imprimir y entregar una representación del CFE correspondiente.
+Dicha representación deberá contener un sello digital que asegure su autenticidad y cumplir con los requisitos previstos en el numeral 14º.
+Para los receptores no electrónicos, en tanto el CFE no hubiera sido rechazado por la Dirección General Impositiva y se verifique su autenticidad según lo previsto en el numeral 22°, el referido documento será válido a todos los efectos fiscales, excepto en los casos previstos en el inciso quinto del artículo 124° del Decreto N° 220/998 de 12 de agosto de 1998.
+Para los receptores electrónicos, en tanto no hubieran transcurrido más de 30 días de su ingreso al régimen de CFE, la representación impresa tendrá la misma validez prevista en el inciso anterior, en tanto se cumplan las condiciones referidas en el mismo.
+NOTA: Este inciso 4º fue sustituido por la Resolución DGI Nº 1.184/2020 de 06.07.020, numeral 2º) (D.Of. 07.07.020 U.M.).
+8º bis) Excepciones a la representación impresa. - Sin perjuicio de lo establecido en el numeral anterior, el emisor electrónico podrá omitir la emisión y entrega de la representación impresa en los siguientes casos:
+a. cuando se trate de operaciones con receptores no electrónicos, y no exista traslado de bienes, siempre que exista consentimiento de dichos receptores, mediante una autorización expresa, independiente al contrato principal, que establezca la forma en la cual accederán al comprobante.
+La autorización podrá ser extendida sobre un soporte electrónico o en papel.
+En caso de ser otorgada en forma electrónica, la misma deberá efectuarse a través del acceso autenticado del receptor al sitio web del emisor. Si se otorgara en papel, como mínimo deberá contener firma e identificar al autorizante mediante nombre o denominación, documento o número de inscripción en DGI y domicilio.
+En todos los casos, la autorización deberá conservarse y mantenerse a disposición de la Dirección General Impositiva por parte del emisor electrónico.
+Cuando un receptor no electrónico realice compras por vía electrónica y no exista traslado de bienes, el mero hecho de realizar la operación hará presumir su consentimiento expreso respecto de la forma de acceso al CFE que preceptivamente comunique el emisor.
+Asimismo, se entenderá que el receptor no electrónico otorga consentimiento expreso respecto de la forma de acceso al CFE que preceptivamente le comunique el emisor, salvo que solicite la representación impresa del referido comprobante:
+i. si realiza el pago para cancelar sus compras que no impliquen traslado de bienes, a través de débito automático.
+ii. cuando se trate de transacciones automáticas sin la intervención presencial del receptor no electrónico y éste pueda verificar dichos movimientos en el correspondiente estado de cuenta.
+Las e-Facturas y sus notas de corrección, así como los e-Resguardos, a los que accedan los receptores no electrónicos mediante esta modalidad, deberán ser impresos en forma inmediata a su recepción, en las condiciones establecidas en el documento Formato de CFE/Formato de la representación impresa, publicado en el Portal e factura del sitio web de la DGI.
+b. cuando se trate de venta de entradas a discotecas, salas de baile, espectáculos y servicios de carácter recreativo, siempre que no sea solicitada por el receptor y se incluya en la impresión de la entrada, como mínimo, la forma de acceder al referido comprobante. Lo dispuesto precedentemente no será de aplicación para el resto de las operaciones del contribuyente.
+c. cuando se documenten traslados internos de bienes en e-Remitos, y quien efectúa el traslado cuente con una representación del CFE en formato de imagen o PDF.
+NOTA: Este numeral fue sustituido por la Resolución DGI Nº 1.184/2020 de 06.07.020, numeral 3º) (D.Of. 07.07.020 U.M.).
+9º) Constancia de autorización de emisión de CFE (CAE).- Los sujetos pasivos incluidos en el presente régimen deberán solicitar, a través del sitio web de la Dirección General Impositiva, una constancia de autorización para la emisión de cada tipo de comprobante fiscal electrónico, a los efectos de obtener el rango de numeración a utilizar.
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 2.719/2012 de 15.11.012, numeral 3º).
+Quedan incluidos en la obligación a que refiere el presente numeral, los contribuyentes exonerados por todas sus operaciones, de impuestos administrados por la Dirección General Impositiva. Previo a la solicitud, los mencionados sujetos deberán presentar una declaración jurada en la que describirán las actividades objeto de exoneración que desarrollan, citando las normas que les dan mérito, así como la documentación acreditante del cumplimiento de los requisitos exigidos en cada caso. No están comprendidos en el presente inciso los usuarios directos o indirectos de Zona Franca.
+NOTA: Este inciso 2º fue sustituido por la Resolución DGI Nº 1.252/2020 de 16.07.020, numeral 4º) (D.Of. 17.07.020 U.M.).Vigencia 1.9.020
+Aquellos contribuyentes que desarrollen más de una actividad, encontrándose alguna de ellas exonerada, deberán dar cumplimiento a lo previsto en los incisos precedentes a efectos de obtener las correspondientes constancias que habiliten la documentación de cada tipo de operación.
+NOTA: Este inciso 3º fue agregado por la Resolución DGI Nº 1.252/2020 de 16.07.020, numeral 4º) (D.Of. 17.07.020 U.M.). Vigencia: 1°.09.020.
+Una vez realizados los controles que se establezcan, las solicitudes serán autorizadas. En esa instancia, se pondrá a disposición del sujeto pasivo un archivo informático firmado electrónicamente, que contendrá entre otros datos, el número de CAE, el rango de numeración autorizada por tipo de comprobante, y el vencimiento del mismo.
+Para cada serie incluida en el rango requerido, deberá efectuarse una solicitud independiente.
+10º) Numeración de CFE.- La numeración de los CFE será única por tipo de comprobante, de acuerdo al rango de numeración autorizado, incluso la correspondiente a operaciones de sucursales.
+Dicha numeración será independiente de la otorgada a los documentos no electrónicos, comenzará en el número 1 serie A y hasta agotar siete dígitos, reiniciando nuevamente desde el número 1 con la serie siguiente, alfabética (exceptuando la letra Ñ) y de hasta dos posiciones.
+Una vez agotadas todas las series alfabéticas, se utilizarán series alfanuméricas de dos posiciones, comenzando en la serie 1A y con las mismas características establecidas en el inciso anterior.
+NOTA: Este inciso 3º fue agregado por la Resolución DGI Nº 1.585/2020 de 31.08.020, numeral 1º) (D.Of. 1°.09.020 U.M.).
+11º) Rango de numeración - Validez.- El rango de numeración adjudicado para cada tipo de CFE tendrá un plazo de validez de dos años a contar desde la fecha de emisión de la constancia de autorización correspondiente.
+Una vez vencido el mismo y en caso de mantener numeración sin utilizar, el contribuyente deberá proceder a su anulación.
+12º) Anulación/corrección de CFE.- En caso de detectarse errores durante la confección de un CFE, el emisor podrá anular la numeración asignada al comprobante.
+Si se detecta un error no factible de ser corregido luego de emitirse el comprobante y previo a su envío a la Dirección General Impositiva o a su entrega al receptor en caso de no corresponder el envío al mismo, el emisor procederá a anular el referido comprobante.
+Asimismo, será preceptiva la anulación del CFE cuando éste sea rechazado por la Dirección General Impositiva. En este caso, deberá generarse, para esa operación, un nuevo comprobante con otro número, el que deberá ser remitido tanto a la Dirección General Impositiva como al receptor.
+Los CFE aceptados por la Dirección General Impositiva, se ajustarán exclusivamente mediante sus respectivas notas de corrección.
+13º) Formato del CFE.- Los CFE presentan un formato único basado en el estándar XML. En dichos comprobantes se identifican las siguientes zonas, que contendrán toda la información específica de la operación, necesaria para el emisor y el receptor:
+A. Encabezado: incluye la identificación del comprobante, información del emisor y del receptor, así como los montos de la transacción.
+B. Detalle de productos o servicios: incluye una línea por ítem, con detalle de cantidad, precio unitario, descuentos y recargos, impuestos adicionales y monto del item.
+Los e-Tickets y sus notas de corrección podrán contar, como máximo, con 700 líneas de detalle; para los restantes CFE el máximo será de 200 líneas.
+C. Sub totales informativos.
+D. Descuentos y Recargos: para especificar descuentos o recargos que afectan al total del documento.
+E. Medios de pago con que se cancela el comprobante.
+F. Información de referencia: incluye detalle de los documentos de referencia, en caso de existir.
+G. Constancia de autorización para emisión de CFE.
+H. Fecha y hora de firma electrónica avanzada.
+I. Firma Electrónica avanzada para garantizar la autenticidad, integridad y no repudio del CFE.
+J. Adenda: Se incluirá en esta zona:
+- toda leyenda o constancia específica que deba incluirse en la documentación de acuerdo a lo previsto en la normativa relativa a determinadas operaciones, excepto en aquellos casos en que dicha normativa establezca expresamente otra ubicación.
+- la información relativa al receptor, cuando la misma no se consigne en la Zona Encabezado, por encontrarse la operación amparada en el secreto profesional dado que el emisor, o el mandante en documentación emitida de acuerdo a la Resolución Nº 1643/2014 de 21 de mayo de 2014; es uno de los sujetos alcanzados por los artículos 25 del Decreto-Ley Nº 15.322 de 17 de setiembre de 1982 o 54 de la Ley Nº 18.627 de 2 de diciembre de 2009.
+NOTA: Este inciso 1º del apartado J fue sustituido por la Resolución DGI Nº 1.264/2023 de 05.07.023, numeral 1º) (D.Of. 06.07.023 U.M.).
+La adenda también podrá contener toda otra información que el receptor/emisor requieran, y no esté incluida en el formato definido por la Dirección General Impositiva.
+La información contenida en esta zona no deberá ser reportada a la Dirección General Impositiva.
+K. Complemento Fiscal: incluye información del sujeto por cuenta de quien se realiza la operación. La información contenida en esta zona debe enviarse al receptor en forma libre o encriptada.
+NOTA: El apartado K. fue agregado por la Resolución DGI Nº 1.643/2014 de 21.05.014, numerales 8º) y 9º VIGENCIA: 1º.09.014.
+Las zonas a incluir en cada tipo de comprobante, así como el detalle y características de las áreas y campos contenidos en cada una de ellas, se detallan en el Documento “Formato de los CFE”, publicado en el Portal e-Factura del sitio web de la Dirección General Impositiva.
+14º) Características de la representación impresa.- La representación impresa de los CFE deberá contener como mínimo los siguientes datos con las formalidades que se establecen a continuación:
+– Identificación del emisor electrónico - En el ángulo superior izquierdo y en el siguiente orden:
+1) nombre o denominación
+2) nombre comercial, cuando exista
+3) domicilio fiscal
+La referida información de carácter permanente, podrá establecerse en forma preimpresa, debiendo coincidir exactamente con la que consta en la versión electrónica del CFE correspondiente.
+Sin ubicación predeterminada y previo a la identificación del receptor, en caracteres no inferiores a 3 mm de alto, en un recuadro no inferior a 4 cm de largo por 1 cm de ancho, que podrá establecerse en forma preimpresa, los contribuyentes que se mencionan a continuación deberán incluir las correspondientes leyendas:
+• emisores electrónicos exonerados por todas sus operaciones de impuestos administrados por la Dirección General Impositiva, así como aquellos que desarrollan más de una actividad, a efectos de documentar operaciones vinculadas a una actividad exonerada: “Contribuyente Exonerado”, complementada por la referencia a la norma que otorga la exoneración
+• emisores electrónicos comprendidos en el literal E) del Artículo 66 del Título 4 del Texto Ordenado 2023: “Contribuyente IVA MINIMO”
+• emisores electrónicos comprendidos en el Título 5 del Texto Ordenado 2023: “MONOTRIBUTO”.
+• emisores electrónicos comprendidos en el Título 6 del Texto Ordenado 2023: “MONOTRIBUTO SOCIAL MIDES”
+Nota: Este inciso fue sustituido por la Resolución DGI Nº 798/025 de 24.04.025, numeral 2º (D.Of. 25.04.025).
+– Identificación del comprobante - En el ángulo superior derecho, en caracteres no inferiores a 3 mm de alto y en el siguiente orden:
+4) número de inscripción en el RUC del emisor
+5) tipo de CFE
+6) serie y número asignado al CFE
+7) forma de pago
+Los e-Remitos de depositarios que acompañen el traslado de bienes de terceros, deberán contener, sin ubicación predeterminada, la leyenda “Bienes de Terceros”, y la identificación inequívoca del titular de los mismos, mediante nombre o denominación y documento o número de inscripción en DGI, en caracteres no inferiores a 3 mm. de alto.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 1.644/2018 de 13.03.018, numeral 2º). D.Of. 14.03.018 U.M.).
+Los CFE confeccionados por mandatarios a efectos de trasladar el gasto correspondiente a operaciones comprendidas en el artículo 105º del Decreto Nº 220/998, de 12 de agosto de 1998, deberán contener, sin ubicación predeterminada, la leyenda “Pagos por cuenta de terceros”, en caracteres no inferiores a 3mm de alto.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 10.197/2018 de 1º.11.018, numeral 4º). D.Of. 05.11.018. Vigencia: 1º.08.2019.*
+* Por Resolución DGI Nº 1.122/2019 de 29.04.019 (D.Of. 30.04.019 UM) se prorroga entrada en vigencia.
+– Identificación del receptor -
+• Operaciones con contribuyentes identificados mediante número de RUC
+8) un recuadro no inferior a 4 cm. de largo por 1 cm. de ancho conteniendo la mención “RUC COMPRADOR” y en renglón siguiente, dentro del recuadro, un espacio para ingresar el número de RUC del comprador, en caracteres no inferiores a 3 mm. de alto. En las e-Boletas de Entrada y sus notas de corrección, el recuadro referido contendrá la mención “RUC VENDEDOR”, y en el espacio dentro del recuadro se ingresará el número de RUC del vendedor.
+NOTA: Este ordinal fue sustituido por la Resolución DGI Nº 2.438/2017 de 4.05.017, numeral 3º).
+9) nombre o denominación
+10) domicilio fiscal
+• Restantes operaciones
+11) Un recuadro no inferior a 4 cm. de largo por 1 cm. de ancho conteniendo la mención “CONSUMO FINAL”, en caracteres no inferiores a 3 mm. de alto.
+12) Si el monto neto del CFE es mayor a UI 10.000 (diez mil unidades indexadas), o en el mismo, sin importar su monto, se documentan retenciones o percepciones; debe consignarse el número de documento del receptor, indicando el país emisor del mismo, sin perjuicio de las excepciones expresamente establecidas para determinadas operaciones.
+NOTA: Este ordinal fue sustituido por la Resolución DGI Nº 2.886/2014 de 22.08.014, numeral 4º.
+En documentos emitidos a partir del 1º de noviembre de 2022, el monto establecido en el inciso anterior se reduce a UI 5.000 (cinco mil unidades indexadas).
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 531/2022 de 27.04.022, Numeral 1º). D.Of. 28.04.022 UM .
+No serán de aplicación los ordinales 11) y 12) precedentes:
+a) en el caso de exportación de bienes y/o de servicios, debiendo consignarse nombre o denominación y domicilio del receptor.
+b) cuando se documenten mediante e-resguardos, retenciones o percepciones de impuestos a personas físicas residentes o no residentes y a entidades del exterior, debiendo consignarse el nombre o denominación y número de identificación del retenido, sin perjuicio de las excepciones expresamente establecidas para determinadas operaciones.
+c) cuando se utilicen e-Boletas de entrada y sus notas de corrección para documentar las operaciones referidas en el literal a) del apartado m) del numeral 1º) de la presente resolución, debiendo consignar nombre, número de documento y domicilio del receptor no electrónico.
+NOTA: Este literal c) fue sustituido por la Resolución DGI Nº 277/2021 de 18.02.021, numeral 2º (D.Of. 19.02.021 UM).
+No será de aplicación el ordinal 11) precedente cuando se utilicen e-Boletas de entrada y sus notas de corrección para documentar las operaciones referidas en el literal b) del apartado m) del numeral 1°) de la presente resolución.
+NOTA: Este inciso fue agregado como 3° por la Resolución DGI Nº 277/2021 de 18.02.021, numeral 3º (D.Of. 19.02.021 UM).
+Cuando se documenten operaciones a entidades no residentes que no cuenten con número de RUT, excepto las incluidas en el literal a) del inciso anterior, podrá omitirse el requisito previsto en el ordinal 11), debiendo consignarse nombre o denominación y domicilio del receptor.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 2.886/2014 de 22.08.014, numeral 5º).
+En aquellos casos en que la operación esté amparada al secreto profesional por ser el emisor, o el mandante en documentación emitida de acuerdo a la Resolución Nº 1643/2014 de 21 de mayo de 2014; uno de los sujetos alcanzados por los artículos 25 del Decreto Ley Nº 15.322 de 17 de setiembre de 1982 o 54 de la Ley Nº 18.627 de 2 de diciembre de 2009, la información correspondiente a la identificación del receptor podrá omitirse, debiendo consignarse la misma en la Adenda.
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 780/2019 de 19.03.019, numeral 2º) (D.Of. 20.03.019 UM).
+– Cuerpo del comprobante -
+13) fecha del comprobante
+14) Detalle de mercaderías con indicación de cantidades físicas, precio unitario y final. En el caso de servicios, podrán omitirse el precio unitario y la cantidad. En los e-Remitos de exportación podrán omitirse tanto el precio unitario como el final.
+NOTA: Este ordinal fue sustituido por la Resolución DGI Nº 745/2016 de 16.02.016, numeral 3º).
+15) montos netos totales por tasa de IVA. En los e-Tickets y sus notas de corrección, no será necesaria la referida discriminación, siendo suficiente establecer exclusivamente el monto bruto total de la operación.
+NOTA: Este ordinal fue sustituido por la Resolución DGI Nº 2.719/2012 de 15.11.012, numeral 4º).
+16) total de IVA discriminado por tasas. En los e-Tickets y sus notas de corrección, no será necesaria la discriminación del impuesto correspondiente a operaciones gravadas.
+NOTA: Este ordinal fue sustituido por la Resolución DGI Nº 2.719/2012 de 15.11.012, numeral 4º).
+17) impuestos adicionales, otros impuestos, otros montos, en caso de corresponder
+18) descuentos y/o recargos
+19) referencias, cuando resulten obligatorias
+En los comprobantes emitidos por contribuyentes comprendidos en el literal E) del artículo 66 del Título 4 del Texto Ordenado 2023 no se deberá hacer ninguna mención al IVA, excepto lo dispuesto en el ordinal 23.
+En los comprobantes emitidos por contribuyentes comprendidos en los Títulos 5 o 6 del Texto Ordenado 2023:
+a) no se deberá incluir la constancia de estar al día con el IVA, ni ninguna otra mención relativa a dicho impuesto;
+b) se podrá establecer un solo domicilio fiscal, independientemente del desarrollo de actividades en varios domicilios.
+Nota: Este inciso fue sustituido por la Resolución DGI Nº 798.025 de 24.04.025, numeral 3º (D.Of. 25.04.025).
+19bis) detalle de los medios de pago cuando se cancelen operaciones al contado por un importe mayor o igual a UI 40.000 (cuarenta mil unidades indexadas) impuestos incluidos.
+NOTA: Este ordinal queda derogado por la Resolución DGI Nº 10.558/2018 de 06.12.018 (D.Of. 07.12.018 UM).
+– Pie del comprobante –
+• En el ángulo inferior izquierdo deberán constar en el siguiente orden:
+20) sello digital
+21) código de seguridad
+22) leyenda incluyendo:
+-“Fecha emisor” y la correspondiente fecha de incorporación del emisor al régimen. Quienes hubiesen sido incorporados por resolución, deberán incluir exclusivamente el número de la misma
+- una de las siguientes frases según el CFE de que se trate:
+¿ e-Tickets y sus notas de corrección: “Puede verificar comprobante en www…(URL de la empresa)”
+¿ Restantes comprobantes: “Puede verificar comprobante en www.dgi.gub.uy”.
+La leyenda podrá incorporarse debajo o al costado del sello digital.
+NOTA: Este ordinal 22 fue sustituido por la Resolución DGI Nº 9.834/2018 de 26.10.018, numeral 3º) (D.Of. 29.10.018).
+23) Constancia de estar al día con el IVA, si corresponde
+24) Número de CAE
+25) Rango autorizado
+• En el sector inferior, al centro o en el ángulo inferior derecho:
+26) un recuadro no inferior a 2 cm de largo por 1cm de ancho donde constará la leyenda "Fecha de vencimiento" y la correspondiente fecha de vencimiento del rango autorizado, escriturado en caracteres no inferiores a 3 mm de alto
+Adenda -La información incorporada en la adenda se incluirá en un espacio debidamente delimitado e identificado con la palabra “ADENDA” en la primera línea, en uno de los siguientes formatos a opción del emisor:
+• En hoja separada;
+• En la misma hoja, imprimiendo primero el CFE, respetando las dimensiones mínimas y máximas establecidas para éste, y luego la Adenda;
+• Dentro del cuerpo del CFE, manteniendo un espacio de al menos 5 mm con los bordes del comprobante y con los datos del mismo.
+No obstante lo dispuesto precedentemente, el código (número) y símbolo (representación gráfica), incluido a los efectos de la distribución de la representación impresa del CFE, podrá imprimirse en hasta dos renglones, fuera del espacio delimitado de la Adenda.
+Las leyendas o constancias obligatorias, en caracteres no inferiores a 3 mm de alto, deberán incluirse:
+- en el espacio debidamente delimitado e identificado con la palabra “ADENDA”, previo a cualquier mención no obligatoria contenida en el mismo. De igual manera deberá procederse con la información correspondiente a la identificación del receptor, cuando la misma no se establezca en la Zona Encabezado, por encontrarse la operación amparada en el secreto profesional, dado que el emisor es uno de los sujetos alcanzados por los artículos 25 del Decreto Ley N° 15.322 de 17 de setiembre de 1982 o 54 de la Ley N° 18.627 de 2 de diciembre de 2009, o
+- en el espacio que preceptivamente determine la normativa particular vigente.
+Nota: El inciso 2º del numeral 14) es incorporado por Resolución DGI Nº 1.264/2023 de 05.07.023, numeral 3º) (D.Of. 06.07.023 UM).
+El emisor electrónico podrá imprimir un CFE en varias hojas siempre que se imprima como mínimo el nombre o denominación y número de inscripción en el RUC del emisor electrónico y del receptor, el tipo, serie y número del CFE y el sello digital, en cada una de ellas y se detalle el número de página, así como el total de páginas que componen el documento. En los e-Tickets y sus notas de corrección, cuando corresponda identificar al receptor, deberá consignarse el número de documento de identidad y el país emisor del mismo.
+Nota: Este inciso fue sustituido por la Resolución DGI Nº 2.719/2012 de 15.11.012, numeral 6º).
+Cuando el tamaño del papel no permita situar los datos de acuerdo con las formalidades de ubicación previstas anteriormente, deberá, no obstante, mantenerse el orden establecido en el presente numeral.
+Las características de la representación impresa del documento a que refiere este numeral, se encuentran en el Documento “Formato de los CFE”, publicado en el Portal e-Factura del sitio web de la Dirección General Impositiva.
+15º) Sello Digital.- A efectos de asegurar la autenticidad de la representación impresa de los CFE, la misma deberá incluir un sello digital que permitirá verificar que el número con que se generó el comprobante ha sido autorizado por la Dirección General Impositiva, que los datos principales del mismo no han sido alterados y que fue efectivamente generado por el emisor electrónico correspondiente.
+Las características que deberá presentar el sello digital, se encuentran en el Documento “Formato de los CFE”, publicado en el Portal e-Factura del sitio web de la Dirección General Impositiva.
+16°) Tabla de control.- En aquellos casos en que corresponda vincular una e-Factura o e-Ticket con otro comprobante que el contribuyente deba proporcionar al adquirente, se deberá confeccionar una tabla que vincule la numeración asignada a ambos comprobantes, manteniéndola permanentemente actualizada y a disposición de la Dirección General Impositiva.
+Lo dispuesto precedentemente no será de aplicación cuando los comprobantes a vincular sean los definidos en los apartados b), c), e) o f) del numeral 1º de la presente Resolución, ni cuando la referida vinculación se establezca al menos en uno de los comprobantes a relacionar.
+Cuando la vinculación sea entre un comprobante de los referidos en el primer inciso y un voucher por operaciones con tarjetas de crédito o débito, corresponderá confeccionar la tabla de control en todos los casos.
+NOTA: Este numeral fue sustituido por la Resolución DGI Nº 2.281/2013 de 25.07.013, numeral 3º).
+17º) Contingencias.- Cuando no resulte posible la utilización del sistema, los emisores electrónicos deberán operar con un nuevo tipo de comprobantes preimpresos que se denominarán Comprobantes Fiscales de Contingencia (CFC), los que se regirán por las normas generales de documentación de operaciones, excepto por lo dispuesto en la presente Resolución. En lo referente a los requisitos de ubicación y tamaño, dichos documentos podrán prescindir de los establecidos en las normas generales de documentación y en sustitución aplicar los previstos para la representación impresa en el numeral 14º de la presente Resolución.
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 4º).
+No corresponderá emitir CFC cuando se produzcan exclusivamente fallas en la comunicación que impidan la remisión de la información correspondiente a la Dirección General Impositiva.
+La constancia para la impresión de los CFC se otorga al domicilio fiscal principal exclusivamente y se obtendrá a través del sitio web de la Dirección General Impositiva. Una vez autorizada la solicitud, la Dirección General Impositiva dejará disponible, para la imprenta autorizada, la constancia de impresión junto con el archivo informático que contiene la imagen del sello digital.
+Los referidos comprobantes contarán con numeración acorde a la asignada a la documentación en papel e incluirán en forma preimpresa, el tipo de CFE que sustituyen y la leyenda “contingencia”, en caracteres no inferiores a 3 mm de alto.
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 5º).
+Cuando se utilicen sistemas computarizados para la emisión de CFC, podrá optarse por imprimir mediante el sistema el tipo de CFE que sustituye e incluir en forma preimpresa exclusivamente la leyenda “Contingencia”.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 2.281/2013 de 25.07.013, numeral 5º).
+Cuando los CFC se emitan en rollos de papel continuo de largo variable de acuerdo a lo establecido por la Resolución Nº 411/1999 de 23 de noviembre de 1999, el sistema deberá imprimir en cada documento el tipo de CFE que sustituye y la leyenda “contingencia”. Asimismo, dichos documentos deberán incluir al dorso, sin ubicación predeterminada, en forma preimpresa, la leyenda “contingencia” en caracteres no inferiores a 3 mm. de alto y en las condiciones establecidas en el cuarto inciso del numeral 2 de la mencionada resolución.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 6º).
+En caso de que la actividad se desarrolle en distintos domicilios fiscales, la documentación que respalde las operaciones realizadas en cada uno de ellos podrá tener preimpreso exclusivamente el domicilio fiscal principal y prever espacio donde se consignará el domicilio en el que se realiza la operación, o bien contener preimpreso el domicilio fiscal principal y el de la sucursal en la que se emitirá el documento.
+La documentación preimpresa para estos casos, sólo podrá ser utilizada dentro del término de cinco años contados a partir de la fecha de emisión de la constancia.
+Para constancias emitidas a partir del 1º de octubre de 2025, el plazo para la utilización de la documentación preimpresa a que refiere este numeral, será de dos años contados a partir de la emisión de la constancia correspondiente.
+Los plazos dispuestos en los incisos anteriores no será de aplicación en los casos previstos en el artículo 1º del Decreto Nº 463/002 de 29 de noviembre de 2002, para los cuales podrá determinarse una fecha de validez menor.
+Nota: Este inciso fue sustituido por Resolución DGI N° 1421/025 de 28.08.025 (D.Of.29.08.025 UM).
+La información relativa a operaciones respaldadas en documentación de contingencia se remitirá a la Dirección General Impositiva en la forma indicada para el tipo de CFE que sustituye, una vez superada la misma.
+A esos efectos, el software del emisor electrónico deberá contener un módulo denominado “Contingencia” en el cual se ingresará manualmente cada uno de los documentos de contingencia emitidos. La información contenida en este módulo deberá ser incorporada en los reportes diarios de los CFE.
+No obstante, respecto de estas operaciones, el CFC será el comprobante fiscalmente válido.
+18º) Imprentas – Documentación de contingencia.- A efectos de la impresión de los CFC, regirán para las imprentas las normas establecidas en el régimen general de documentación de operaciones, con las excepciones establecidas en la presente resolución.
+19º) Obligaciones del emisor electrónico.- El emisor electrónico deberá:
+a- Enviar todos los CFE a sus receptores electrónicos por el medio que hubieran acordado, siendo el correo electrónico el protocolo mínimo de comunicación admitido.
+A partir del 1º de setiembre de 2024, para el intercambio de CFE y acuses de recibo correspondientes entre emisores electrónicos, el uso de servicios web indicado en el “Estándar de intercambio entre emisores a través de Servicios web” publicado en el Portal e-Factura del sitio web de la Dirección General Impositiva será obligatorio cuando sea ejecutado a través de proveedores habilitados
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 1256/2024 de 12.06.024, numeral 1º).
+Los referidos comprobantes deberán ser enviados en un "sobre". Las características de los mismos se especifican en el Documento "Formato del sobre", publicado en el Portal e-Factura del sitio web de la Dirección General Impositiva.
+Nota: Ver Res. DGI 752/024 de 08.04.024, art.1º. Documentación Fiscal Electrónica. Emisores electrónicos.
+b- Recibir todos los documentos electrónicos de aquellos proveedores que sean emisores electrónicos autorizados y entregar los acuses de recibo según lo estipulado en el numeral 21º.
+c- Almacenar y mantener disponibles por el término de prescripción de los tributos, los CFE, en el mismo formato original en que fueron emitidos o recibidos.
+d- Enviar a la Dirección General Impositiva, en los plazos y condiciones establecidos en el numeral 20º, la información requerida.
+e- Comunicar a la Dirección General Impositiva, por las vías habilitadas a tales efectos, la imposibilidad de utilización del sistema, así como las demoras en el envío de la documentación emitida. De igual forma deberá procederse en ocasión de superar los referidos eventos.
+NOTA: Este literal fue sustituido por la Resolución DGI Nº 2.281/2013 de 25.07.013, numeral 6º).
+f- Enviar una comunicación al receptor electrónico en todos aquellos casos en que corresponda anular un CFE por haber sido rechazado por la Dirección General Impositiva, antes de las 18 (dieciocho) horas del día hábil siguiente a la recepción de la notificación de dicho rechazo. Esta comunicación deberá efectuarse de acuerdo con las características especificadas en el Documento “Formato del mensaje de Respuesta”, publicado en el Portal e-Factura del sitio web de DGI.
+NOTA: Este literal fue sustituido por la Resolución DGI Nº 2.281/2013 de 25.07.013, numeral 6º).
+g- Publicar en su web declarada en la Dirección General Impositiva e indicada en el documento; en formato PDF, todos los e-Tickets y sus notas de corrección, antes de las 18 (dieciocho) horas del día hábil siguiente a la emisión y mantenerlos por un plazo no menor a 90 días; a efectos de su verificación.
+h- Publicar en su web declarada en la Dirección General Impositiva en formato PDF, las e-Facturas y sus notas de corrección, e-Resguardos, e-Remitos y e-Boletas de Entrada y sus notas de corrección, cuando sus representaciones impresas lo hubieren sido en papel térmico. Dichos documentos deberán ser publicados antes de las 18 (dieciocho) horas del día hábil siguiente a la emisión y mantenerse disponibles por un período mínimo de cinco años, permitiendo de esta manera su reimpresión.
+NOTA: El inciso 1º del literal h) fue sustituido por la Resolución DGI Nº 2.438/2017 de 4.05.017, numeral 5º).
+No obstante lo dispuesto precedentemente, será opción del emisor la publicación de los e-Remitos correspondientes a traslados internos de bienes, en todos los casos.
+NOTA: Este inciso 2º fue agregado por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 7º).
+i- Mantener actualizada toda la información proporcionada a la Dirección General Impositiva, vinculada a su calidad de emisor electrónico.
+20º) Obligación de informar.- Los sujetos pasivos incluidos en el presente régimen deberán remitir a la Dirección General Impositiva la siguiente información, firmada electrónicamente, en la forma y oportunidad que se determina a continuación:
+a) respecto de operaciones documentadas en e-Facturas y sus notas de corrección, e-Remitos y e-Resguardos; deberán enviar cada uno de los referidos CFE, previo al envío al receptor electrónico, al transporte de mercaderías o a la entrega de la representación impresa al receptor no electrónico; según corresponda.
+b) en el caso de operaciones documentadas en e-Tickets y sus notas de corrección, se deberá enviar cada uno de los referidos CFE, previo al envío al receptor electrónico; al transporte de mercaderías o a la entrega de la representación impresa al consumidor final; según corresponda, en los siguientes casos:
+- cuando el monto neto supere las UI 10.000 (diez mil unidades indexadas) excluido el IVA, según cotización vigente al cierre del año civil anterior. En documentos emitidos a partir del 1º de noviembre de 2022, el monto referido se reduce a UI 5.000 (cinco mil unidades indexadas).
+- sin importar su monto, cuando:
+* los mismos documenten retenciones o percepciones;
+* correspondan a actividades económicas que deban preceptivamente documentarse a consumo final de acuerdo a la normativa vigente y el receptor se identifique con número de RUC;
+* se documenten:
+* exportaciones de servicios
+* operaciones comprendidas en el Decreto Nº 378/012 de 23 de noviembre de 2012.
+NOTA: Este literal fue sustituido por la Resolución DGI Nº 531/022 de 27.04.022, numeral 2º). D.Of. 28.04.022 UM.
+c) cada una de las e-Facturas de Exportación y sus notas de corrección, así como los e-Remitos de Exportación, deberán enviarse en forma previa al transporte de mercadería, a la entrega de la representación impresa o al envío a la Dirección Nacional de Aduanas, según corresponda.
+NOTA: El literal c) fue agregado por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 8º).
+d) los Tax Free Shops incluidos en el Capítulo XXXII del Título 3 del Texto Ordenado 2023 y los contribuyentes que operen en el régimen especial de venta de bienes a turistas establecido por el Decreto Nº 367/995, de 4 de octubre de 1995, deberán enviar cada uno de los CFE emitidos, previo al envío al receptor electrónico, al transporte de mercaderías o a la entrega de la representación impresa al receptor no electrónico; según corresponda.
+Nota: Este literal d) fue sustituido por Resolución DGI N° 798/025 de 24.04.025 numeral 4° (D.Of. 25.04.025 U.M.).
+e) los contribuyentes que realicen actividades de elaboración de harina de trigo y otros productos de su molienda, incluso quienes realicen servicios de façon para la elaboración de dichos productos y aquellos que resulten prestatarios de los mismos; deberán enviar cada uno de los CFE emitidos y sus notas de corrección, previo al transporte de la mercadería o a la entrega de la representación impresa al receptor no electrónico, según corresponda.
+NOTA: El literal e) fue agregado por la Resolución DGI Nº 5.195/2015 de 30.12.015, numerales 1º y 5º Vigencia: 1º.01.016.
+f) en el caso de operaciones documentadas en e-Boletas de Entrada y sus notas de corrección, se deberá enviar cada uno de los referidos CFE, previo a la entrega de la representación impresa al vendedor.
+NOTA: Este literal f) fue sustituido por la Resolución DGI Nº 277/2021 de 18.02.021, numeral 4º (D.Of. 19.02.021 UM).
+g) los contribuyentes cuyo giro de actividad principal registrado corresponda a alguno de los detallados a continuación, deberán enviar cada uno de los CFE emitidos y sus notas de corrección, previo al transporte de la mercadería o a la entrega de la representación impresa al receptor no electrónico, según corresponda:
+• 56101 - Restaurantes y parrilladas
+• 56102 - Rotiserías
+• 56104 - Salones de té
+• 56301 - Bares de expendio de bebidas
+• 56210 - Abastecimiento de eventos
+• 82300 - Organización de convenciones y eventos comerciales.
+NOTA: El literal g) fue agregado por la Resolución DGI Nº 1.315/2023 de 11.07.023, numerales 1º) y 2º). Vigencia: 1º de setiembre de 2023 (D.Of. 12.07.023 Último Momento).
+Cuando la entrega de los bienes y la emisión del correspondiente CFE se verifique en las instalaciones del receptor (facturación móvil), el emisor electrónico dispondrá de un plazo máximo de 12 horas desde la entrega de los bienes, para enviar a la Dirección General Impositiva el referido comprobante.
+Los comprobantes deberán ser enviados en un “sobre”. Las características de los mismos se especifican en el Documento “Formato del sobre”, publicado en el Portal e-Factura del sitio web de la Dirección General Impositiva.
+No será necesario obtener una respuesta de la Dirección General Impositiva a efectos de continuar con la operación informada.
+Cuando se verifiquen exclusivamente fallas en la comunicación con la Dirección General Impositiva, se deberá proceder al mencionado envío una vez superada la misma; sin perjuicio de continuar documentando las operaciones mediante los correspondientes CFE.
+Adicionalmente, todo emisor electrónico deberá generar automáticamente y enviar a la Dirección General Impositiva, un reporte diario consolidado incluyendo un detalle de los CFE y los CFC, emitidos en el día; discriminados por tipo y fecha del comprobante, sucursal y si corresponden a operaciones comprendidas en la Resolución Nº 10.197/2018 de 1 de noviembre de 2018, así como la numeración insumida por los comprobantes emitidos y anulados. A partir del 1º de noviembre de 2022, los importes correspondientes a comprobantes que no fueron emitidos en moneda nacional se deberán incluir en el reporte diario convertidos al tipo de cambio fiscal correspondiente.
+NOTA: Este literal fue sustituido por la Resolución DGI Nº 531/022 de 27.04.022, numeral 2º). D.Of. 28.04.022 UM .
+Dicho archivo deberá enviarse en el formato basado en el estándar XML y con la información que se detalla en el Documento “Formato del reporte diario consolidado de CFE”, publicado en el Portal e-Factura del sitio web de la Dirección General Impositiva; dentro de las primeras 18 (dieciocho) horas del día hábil siguiente al de la operación. Se deberá enviar un informe por cada día calendario, aún si no se han registrado operaciones en el período.
+21º) Acuses de recibo o rechazo.- El receptor electrónico y la Dirección General Impositiva entregarán al emisor, un acuse de recibo en oportunidad de recibir cada sobre, estableciendo el estado de recepción: recibido o rechazado. No obstante, dicho acuse de recibo no implica la aceptación definitiva del envío.
+Posteriormente, y en un plazo máximo de veinte días corridos, el receptor deberá efectuar un acuse de recibo de cada comprobante incluido en el sobre, el que supondrá la recepción del mismo o su rechazo, en el marco de lo acordado entre las partes.
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 2.281/2013 de 25.07.013, numeral 7º).
+Podrá omitirse el acuse de recibo cuando se trate de e-Remitos emitidos para documentar traslados internos de bienes.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 4.464/2013 de 30.12.013, numeral 9º).
+También la Dirección General Impositiva efectuará un acuse de recibo de los comprobantes, el que significa la recepción de los mismos o su rechazo, sin perjuicio de las potestades de la Administración respecto a la operativa.
+NOTA: Este inciso fue sustituido por la Resolución DGI Nº 2.281/2013 de 25.07.013, numeral 7º).
+Si el CFE recibido por la Dirección General Impositiva es rechazado por el receptor, el emisor electrónico emitirá, si corresponde, una nota de corrección de acuerdo a lo dispuesto en el inciso final del numeral 12º de la presente resolución. Mientras no se realice dicha corrección el CFE rechazado será válido a todos sus efectos.
+Los CFC no admiten la posibilidad de ser rechazados, sino que se devolverán observados para su corrección, debiendo el emisor volver a informarlos corregidos, salvo cuando el comprobante papel sea anulado.
+Para los reportes, se entregará un único acuse de recibo por parte de la Dirección General Impositiva, aceptando o rechazando los mismos.
+Los mensajes de respuesta deberán enviarse en el formato basado en el estándar XML y sus características serán las establecidas en el Documento “Formato del mensaje de respuesta”, publicado en el Portal e-Factura del sitio web de la Dirección General Impositiva.
+NOTA: Este numeral fue sustituido por la Resolución DGI Nº 2.719/2012 de 15.11.012, numeral 9º).
+22º) Verificación en línea de los CFE.- Los receptores podrán verificar la existencia y autenticidad de los CFE.
+La referida verificación se realizará:
+a) para los e-Ticket y sus notas de corrección, en el sitio web del emisor,
+b) para los restantes CFE, en el Portal e-Factura del sitio web de la Dirección General Impositiva.
+En ambos casos, se requerirá el ingreso de tipo, serie y número del comprobante, así como su importe y código de seguridad. Si la consulta se realiza en el sitio web de la Dirección General Impositiva, se deberá incluir adicionalmente el RUC del emisor.
+23º) e-Resguardos. Los sujetos pasivos incluidos en el presente régimen, que tengan autorizada la utilización de e-Resguardos emitirán al menos un documento mensual por cada sujeto al que deban efectuar retenciones o percepciones, según corresponda.
+La fecha de comprobante de los e-Resguardos no podrá exceder la del último día del mes de el o los comprobantes que dan origen a las correspondientes retenciones o percepciones que documentan.
+No obstante, los organismos estatales, al emitir sus e-Resguardos podrán indicar la fecha del comprobante que origina la retención, a efectos de dar valor a la misma. En caso que las retenciones documentadas en un e-Resguardo correspondan a más de un comprobante, se estará a la fecha del más reciente.
+Los e-Resguardos por retenciones o percepciones, correspondientes a comprobantes que documenten operaciones en moneda extranjera, podrán emitirse en la misma moneda que los comprobantes originales, siempre que se indique el tipo de cambio fiscal aplicable y sea el mismo para todas las operaciones que originaron las retenciones o percepciones.
+Los e-Resguardos podrán anularse total o parcialmente, mediante otro e-Resguardo, siempre que el nuevo documento identifique el original y posea una Adenda donde conste exclusivamente la expresión “Corrección de e-Resguardo” en caracteres no inferiores a 3mm. de alto.
+A partir del 1º de agosto de 2024, lo dispuesto en el presente numeral también será de aplicación para los e-Resguardos utilizados para efectuar comunicaciones de créditos fiscales a otros contribuyentes de acuerdo a lo que establezca la normativa vigente.
+NOTA: Este inciso fue agregado por la Resolución DGI Nº 821/2024 de 16.04.024, numeral 5º) (D.Of. 17.04.024 U.M.).
+23º bis) Documentación de cobranzas.- A partir del 1º de agosto de 2019, los emisores electrónicos podrán utilizar e-Facturas o e-Tickets, según corresponda, a los efectos de documentar cobranzas, siempre que se cumplan las condiciones establecidas en el presente numeral.
+NOTA: Este inciso 1º fue sustituido por la Resolución DGI Nº 1.120/2019 de 29.04.019, numeral 1º). (D.Of. 30.04.019 UM).
+En aquellos casos en que el emisor electrónico opte por lo previsto en el inciso anterior, deberá:
+a) cuando se trate de cobranzas de operaciones propias o adelantos de precio: documentarlas de manera independiente del resto de las operaciones del sujeto pasivo, en el CFE que corresponda, identificando que se trata de una cobranza y considerando el referido importe como monto no facturable. En la representación impresa deberá consignarse, a continuación del tipo de comprobante, la leyenda “Cobranza” en caracteres no inferiores a 3 mm de alto.
+NOTA: Este literal fue sustituido por la Resolución DGI Nº 2.075/021 de 08.12.021, numeral 4º). Vigencia: 01.02.022, numeral 5º). (D. Of. 09.12.021 UM)
+b) para documentar otras cobranzas no comprendidas en el literal a), incluirlas en el CFE que corresponda, considerando el referido importe como monto no facturable.
+Los documentos emitidos de acuerdo a lo establecido en este numeral mantendrán las mismas obligaciones de información y envío correspondiente al tipo de comprobante utilizado.
+NOTA: Este numeral fue agregado por la Resolución DGI Nº 303/2019 de 22.01.019, numeral 1º (D.Of. 23.01.019)
+24°) Desafiliación del régimen.- Los sujetos incluidos en el presente régimen podrán solicitar la desafiliación del mismo, sin que medie clausura de sus actividades, la que deberá ser autorizada expresamente.
+Por su parte, la Dirección General Impositiva podrá suspender la autorización para operar en el régimen, otorgada a un sujeto pasivo, cuando el mismo deje de verificar alguna de las condiciones requeridas.
+En ambos casos, el sujeto pasivo deberá anular e informar a la Dirección General Impositiva los rangos de numeración autorizados no utilizados, dentro de los cinco días hábiles siguientes a la notificación.
+Lo dispuesto en el inciso anterior deberá cumplimentarse, asimismo, en forma previa a la solicitud de clausura.
+25º) Proveedores de servicios.- Los sujetos pasivos incluidos en el régimen de CFE podrán utilizar proveedores de servicios de emisión, transmisión y conservación de documentos fiscales electrónicos, manteniendo, no obstante la responsabilidad respecto a las referidas actividades.
+Cuando se produzca la habilitación del registro previsto por el artículo 16° del Decreto Nº 36/012 de 8 de febrero de 2012, los referidos proveedores dispondrán de treinta días para proceder a su inscripción en el mismo.
+26º) Documentación no utilizada. - Los sujetos pasivos dispondrán de treinta días a partir de la fecha en que comiencen a documentar exclusivamente mediante cada comprobante fiscal electrónico, para inutilizar todos los ejemplares de los comprobantes impresos que hubiesen sido sustituidos. Los comprobantes inutilizados deberán ser conservados por el plazo de prescripción de los tributos.
+El procedimiento a que refiere el inciso anterior, podrá ser sustituido por la destrucción de todos los ejemplares, dejando constancia de ello en acta notarial. En este caso, se deberá presentar una declaración jurada informativa ante la Dirección General Impositiva individualizando la documentación destruida.
+NOTA: Este numeral fue sustituido por la Resolución DGI Nº 1.184/2020 de 06.07.020, numeral 4º) (D.Of. 07.07.020).
+27°) Cuando las operaciones de exportación de bienes realizadas por emisores electrónicos, no se documenten de acuerdo al régimen establecido por la presente resolución, continuarán rigiéndose conforme a lo previsto en la Resolución Nº 458/1998 de 24 de noviembre de 1998.
+NOTA: Este numeral fue derogado por la Resolución DGI Nº 2.390/2023 de 17.11.023, numeral 7º) (D.Of. 20.11.023(U.M.).
+28°) Regímenes especiales.- No resultarán aplicables a los CFE ni a los CFC, las excepciones al régimen general de documentación de operaciones otorgadas a los sujetos pasivos en forma previa a su incorporación al presente régimen.
+29º) Sustitúyase el numeral 3° de la Resolución N° 1983/011 de 16 de diciembre de 2011, por el siguiente:
+“El régimen a que refiere el numeral anterior no regirá para aquellos contribuyentes que utilicen máquinas registradoras ni para los amparados en la Resolución N° 411/999 de 23 de noviembre de 1999, quienes deberán documentar la totalidad de sus operaciones. Tampoco regirá para aquellas operaciones documentadas mediante comprobantes fiscales electrónicos.”
+30°) Publíquese en el Diario Oficial y en dos diarios de circulación nacional. Insértese en el Boletín Informativo y página web. Cumplido, archívese.
+El Director General de Rentas, Cr. Pablo Ferreri.
+Publicada el 09.05.012 en los diarios “El País”, “El Observador”, “La República” y “La Diaria”.
+Publicada el 15.05.012 en el Diario Oficial Nº 28.469.
+Ayuda
