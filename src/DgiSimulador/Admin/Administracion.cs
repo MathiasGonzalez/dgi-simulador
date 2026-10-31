@@ -191,20 +191,32 @@ internal sealed class Administracion(Almacen almacen, Autoridad autoridad, IOpti
             // Un emisor que ya tiene certificado no recibe otro en cada arranque.
             var conCertificado = emisor.EmitirCertificado && almacen.Certificados().All(c => c.Rut != emisor.Rut);
             if (Aplicar($"el emisor {emisor.Rut}", () => caes += CrearEmisor(new NuevoEmisor
-                {
-                    Rut = emisor.Rut, Denominacion = emisor.Denominacion, Mail = emisor.Mail, UrlServicio = emisor.UrlServicio, MailTecnico = emisor.MailTecnico,
-                    FechaInicio = emisor.FechaInicio, FechaFinTransicion = emisor.FechaFinTransicion, FechaFin = emisor.FechaFin, Simulado = emisor.Simulado,
-                    EmitirCertificado = conCertificado, Tipos = emisor.Tipos,
-                }).Caes.Count))
+            {
+                Rut = emisor.Rut,
+                Denominacion = emisor.Denominacion,
+                Mail = emisor.Mail,
+                UrlServicio = emisor.UrlServicio,
+                MailTecnico = emisor.MailTecnico,
+                FechaInicio = emisor.FechaInicio,
+                FechaFinTransicion = emisor.FechaFinTransicion,
+                FechaFin = emisor.FechaFin,
+                Simulado = emisor.Simulado,
+                EmitirCertificado = conCertificado,
+                Tipos = emisor.Tipos,
+            }).Caes.Count))
                 emisores++;
         }
         foreach (var certificado in semilla.Certificados)
         {
             var archivoCertificado = certificado.Archivo is { Length: > 0 } a ? Path.Combine(directorio, a) : null;
             if (Aplicar($"el certificado {certificado.Archivo ?? certificado.Rut}", () => ImportarCertificado(new NuevoCertificado
-                {
-                    Archivo = archivoCertificado, Pem = certificado.Pem, Base64 = certificado.Base64, Rut = certificado.Rut, Raiz = certificado.Raiz,
-                })))
+            {
+                Archivo = archivoCertificado,
+                Pem = certificado.Pem,
+                Base64 = certificado.Base64,
+                Rut = certificado.Rut,
+                Raiz = certificado.Raiz,
+            })))
                 certificados++;
         }
         foreach (var cae in semilla.Caes)
