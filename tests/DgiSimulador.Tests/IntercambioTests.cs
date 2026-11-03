@@ -95,6 +95,22 @@ public sealed class IntercambioTests(Simulador sim) : IClassFixture<Simulador>
     }
 
     [Fact]
+    public async Task ServicioOcupado_Responde1002SinProcesarYDespuesRecibe()
+    {
+        var (producto, simulada, sobre) = await SobreParaSimulada();
+        using var http = sim.CreateClient();
+        (await http.PostAsJsonAsync("/admin/fallas", new { operacion = "SOBRE", tipo = "ocupado" })).EnsureSuccessStatusCode();
+
+        var ocupado = await sim.ConXmlData($"/intercambio/{simulada.Rut}", "WS_eFactura_Intercambio", "SOBRE", producto.Certificado, sobre);
+        Assert.Equal("1002", ocupado.Buscar("Codigo")!.InnerText);
+        Assert.Equal("Error al recibir el Sobre. Intente luego.", ocupado.Buscar("Descripcion")!.InnerText);
+        Assert.DoesNotContain(sim.Almacen.Intercambios(simulada.Rut), m => m.Tipo == "SOBRE");
+
+        var reintento = await sim.ConXmlData($"/intercambio/{simulada.Rut}", "WS_eFactura_Intercambio", "SOBRE", producto.Certificado, sobre);
+        Assert.Equal("1000", reintento.Buscar("Codigo")!.InnerText);
+    }
+
+    [Fact]
     public async Task EmpresaSimuladaEmite_ElSobreEsValidoYFiguraEnLosCfeRecibidos()
     {
         var producto = await sim.Emisor();

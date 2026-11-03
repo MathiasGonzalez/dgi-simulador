@@ -31,6 +31,8 @@ internal sealed class ReceptorSimulado(
     {
         var empresa = EmpresaSimulada(rut);
         var xml = pedido.XmlData;
+        if (fallas.Negocio(pedido.Operacion, "ocupado") is not null)
+            return Ocupado(pedido.Operacion);
         switch (pedido.Operacion)
         {
             case "SOBRE":
@@ -271,6 +273,19 @@ internal sealed class ReceptorSimulado(
             problemas.Count == 0 ? "valido" : "invalido", reloj.GetUtcNow()));
         return (problemas.Count == 0, detalle);
     }
+
+    /// <summary>
+    /// La falla <c>ocupado</c>: el código x002 de cada operación. La glosa del 1002 es la del estándar; las de 2002, 3002
+    /// y 4002 siguen el mismo patrón (FIDELIDAD.md, supuestos).
+    /// </summary>
+    private static string Ocupado(string operacion) => operacion switch
+    {
+        "SOBRE" => Respuesta(1002, "Error al recibir el Sobre. Intente luego.", null),
+        "RESPUESTASOBRE" => Respuesta(2002, "Error al recibir el ACK Sobre. Intente luego.", null),
+        "RESPUESTACFES" => Respuesta(3002, "Error al recibir el ACKCFE. Intente luego.", null),
+        "NOTIFICACIONANULACIONCFE" => Respuesta(4002, "Error al recibir la Anulación CFEs. Intente luego.", null),
+        _ => throw new FaultSoap($"WS_eFactura_Intercambio no tiene la operación {operacion}."),
+    };
 
     private static string Respuesta(int codigo, string descripcion, string? detalle) => XmlUtil.Escribir(w =>
     {

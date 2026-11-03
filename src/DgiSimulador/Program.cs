@@ -8,6 +8,10 @@ using DgiSimulador.Intercambio;
 using DgiSimulador.Recepcion;
 using DgiSimulador.Soap;
 
+// HEALTHCHECK de la imagen: consulta al simulador que ya corre y sale sin levantar otro.
+if (args is ["--salud"])
+    return await Salud.Comprobar();
+
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<OpcionesSimulador>(builder.Configuration.GetSection("Simulador"));
 builder.Services.AddSingleton(TimeProvider.System);
@@ -27,10 +31,11 @@ builder.Services.AddHttpClient("intercambio", c => c.Timeout = TimeSpan.FromSeco
 // Solo la API de administración: el contrato de los servicios SOAP es el WSDL oficial (?wsdl).
 builder.Services.AddOpenApi(o =>
 {
-    o.ShouldInclude = d => d.RelativePath?.StartsWith("admin/", StringComparison.Ordinal) == true;
+    o.ShouldInclude = d => d.RelativePath is "salud" || d.RelativePath?.StartsWith("admin/", StringComparison.Ordinal) == true;
     o.AddDocumentTransformer((documento, _, _) =>
     {
         documento.Info.Title = "dgi-simulador: administración";
+        documento.Info.Version = Salud.Version;
         documento.Info.Description = "Padrón, certificados y CAE de prueba, inspección de lo recibido, fallas programadas, intercambio y homologación.";
         return Task.CompletedTask;
     });
@@ -41,10 +46,12 @@ builder.WebHost.ConfigureKestrel(k => k.Limits.MaxRequestBodySize = 64 * 1024 * 
 var app = builder.Build();
 app.Services.GetRequiredService<Administracion>().AplicarSemilla();
 app.MapGet("/", () => Results.Redirect("/admin"));
+Salud.Mapear(app);
 ServiciosSoap.Mapear(app);
 AdminApi.Mapear(app);
 app.MapOpenApi();
 app.Run();
+return 0;
 
 /// <summary>Punto de entrada; parcial para las pruebas con <c>WebApplicationFactory</c>.</summary>
 public partial class Program;

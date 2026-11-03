@@ -1,0 +1,39 @@
+version: 2
+# `cooldown`: una versión recién publicada no se propone hasta pasados 7 días (defensa ante paquetes comprometidos).
+# Las correcciones de seguridad no esperan.
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    cooldown:
+      default-days: 7
+    # Los paquetes de ASP.NET Core y SQLite siguen a .NET 10 (TargetFramework y Dockerfile): se pasa de major a mano.
+    ignore:
+      - dependency-name: "Microsoft.AspNetCore.*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "Microsoft.Data.Sqlite"
+        update-types: ["version-update:semver-major"]
+    groups:
+      nuget:
+        update-types: [minor, patch]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    groups:
+      actions:
+        update-types: [minor, patch]
+  # Las imágenes base del Dockerfile (sdk y aspnet de .NET 10). Pasar a otro .NET cambia también el TargetFramework.
+  - package-ecosystem: docker
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    ignore:
+      - dependency-name: "dotnet/*"
+        update-types: ["version-update:semver-major"]

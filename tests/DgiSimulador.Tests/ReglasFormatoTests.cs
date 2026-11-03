@@ -80,6 +80,29 @@ public sealed class ReglasFormatoTests
     [Fact]
     public void PrecioCero_E05() => Rechaza(Controlar(Cfe(101, new LineaCfe("Servicio", 1, 0m))), "tiene que ser mayor que cero");
 
+    [Theory]
+    [InlineData("4006381333931", true)]
+    [InlineData("96385074", true)]
+    [InlineData("036000291452", true)]
+    [InlineData("10012345678902", true)]
+    [InlineData("4006381333932", false)]
+    [InlineData("400638133393", false)]
+    [InlineData("40063813339A1", false)]
+    public void Gtin_DigitoVerificadorDeGs1(string gtin, bool valido) => Assert.Equal(valido, Documentos.GtinValido(gtin));
+
+    [Fact]
+    public void GtinConDigitoVerificadorInvalido_SeAdvierteSinRechazar()
+    {
+        GeneradorCfe ConGtin(string gtin) => Cfe(101) with
+        {
+            Modificar = doc => Agregar(doc.DocumentElement.Buscar("Item")!, "CodItem", ("TpoCod", "GTIN"), ("Cod", gtin)),
+        };
+        SinHallazgos(Controlar(ConGtin("4006381333931")));
+        var hallazgo = Assert.Single(Controlar(ConGtin("4006381333932")));
+        Assert.False(hallazgo.Confirmado);
+        Assert.Contains("GTIN 4006381333932", hallazgo.Detalle);
+    }
+
     [Fact]
     public void Indicador16_SumaEnMntNoGrv()
     {

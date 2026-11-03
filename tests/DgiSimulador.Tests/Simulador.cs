@@ -62,8 +62,15 @@ public class Simulador : WebApplicationFactory<Program>
         int? especial = null, int? causal = null) =>
         Servicio<Administracion>().CrearCae(new NuevoCae
         {
-            Rut = rut, Tipo = tipo, Serie = serie, Desde = desde, Hasta = hasta, Autorizacion = autorizacion, Vencimiento = vencimiento,
-            Especial = especial, Causal = causal,
+            Rut = rut,
+            Tipo = tipo,
+            Serie = serie,
+            Desde = desde,
+            Hasta = hasta,
+            Autorizacion = autorizacion,
+            Vencimiento = vencimiento,
+            Especial = especial,
+            Causal = causal,
         });
 
     /// <summary>Llama a una operación SOAP firmando con WS-Security; devuelve la respuesta HTTP y el SOAP de respuesta.</summary>

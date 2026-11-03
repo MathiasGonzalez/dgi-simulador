@@ -21,13 +21,13 @@ Los controles se escribieron a partir de los documentos de la DGI, sin código d
 ## Arranque
 
 ```bash
-docker run -p 8080:8080 ghcr.io/mathiasgonzalez/dgi-simulador   # http://localhost:8080
+docker run -p 8080:8080 ghcr.io/mathiasgonzalez/dgi-simulador:1   # http://localhost:8080
 # o, desde este repositorio:
-docker compose up          # con --build compila la imagen local
+docker compose up --wait   # con --build compila la imagen local
 dotnet run --project src/DgiSimulador
 ```
 
-La imagen se publica en cada cambio de `main` (`latest` y `sha-<commit>`) y con cada tag `vX.Y.Z`, para amd64 y arm64.
+`GET /salud` responde cuando el simulador está listo, con su versión y el commit de la imagen. La imagen tiene un `HEALTHCHECK` que lo usa, así que los servicios de GitHub Actions y `docker compose up --wait` esperan solos. Qué tag usar está en [Versiones](#versiones).
 
 La página de inspección está en `http://localhost:8080/admin`. Muestra:
 - el padrón, los CAE, los sobres, los CFE con sus motivos y advertencias, los reportes y el intercambio;
@@ -64,28 +64,28 @@ La API de administración (`/admin/*`) está descripta en OpenAPI en `http://loc
 
 ## En CI
 
-En GitHub Actions, el simulador corre como servicio del job y el alta se hace con un `curl`:
+En GitHub Actions, el simulador corre como servicio del job. El runner espera a que el `HEALTHCHECK` lo dé por sano antes del primer paso, así que el alta se hace directamente con un `curl`:
 
 ```yaml
 jobs:
   pruebas:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       dgi:
-        image: ghcr.io/mathiasgonzalez/dgi-simulador:latest
+        image: ghcr.io/mathiasgonzalez/dgi-simulador:1
         ports: ["8080:8080"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Emisor de prueba en el simulador
         run: |
-          until curl -sf localhost:8080/openapi/v1.json > /dev/null; do sleep 1; done
+          curl -sf localhost:8080/salud
           curl -sf -X POST localhost:8080/admin/emisores -H 'Content-Type: application/json' \
             -d '{"rut":"211234560019","tipos":[101,111]}' > emisor.json
           jq -r .certificado.pfx emisor.json | base64 -d > emisor.pfx
       - run: dotnet test   # con las URL de http://localhost:8080 y emisor.pfx
 ```
 
-Después de las pruebas, `GET /admin/cfes?rut=...` muestra las advertencias, que no viajan en la respuesta SOAP. Con `Simulador__Estricto=true` (en `env:` del servicio) rechazan.
+Después de las pruebas, `GET /admin/cfes?rut=...` muestra las advertencias, que no viajan en la respuesta SOAP. Con `Simulador__Estricto=true` (en `env:` del servicio) rechazan. Para que cada prueba parta de cero sin reiniciar el servicio, `POST /admin/reset` borra lo recibido (y con `?todo=true`, también el padrón, los certificados y los CAE).
 
 Fuera de GitHub Actions también se puede cargar todo al arrancar con una semilla: [semilla.ejemplo.json](semilla.ejemplo.json), que se activa con `Simulador__Semilla=/ruta/semilla.json`. Acepta emisores con `tipos`, CAE sueltos y certificados propios (`"certificados": [{"archivo": "certs/mio.pem", "rut": "..."}]`, con la ruta relativa a la semilla). Lo que no se puede cargar se informa en el log y no impide arrancar.
 
@@ -129,7 +129,8 @@ Los controles siguen los documentos vigentes de la DGI: Formato CFE v25.2, Forma
 - los porcentajes globales;
 - los totales con ítems a rebajar del e-Remito de Exportación (indicador 8) y con anulaciones del e-Resguardo (indicador 9). El formato escribe "∑B-C24 − ∑B-C24 (si B-C4=8)" y no aclara si la primera suma incluye esos ítems;
 - la consistencia del reporte con los CFE del día: cantidades, rangos y montos;
-- la firma de un CFE sin `X509IssuerSerial`. La zona I del formato pide el número de serie y el emisor del certificado, y los ejemplos de la DGI siempre lo traen.
+- la firma de un CFE sin `X509IssuerSerial`. La zona I del formato pide el número de serie y el emisor del certificado, y los ejemplos de la DGI siempre lo traen;
+- el dígito verificador de un código de ítem `GTIN` o `EAN` (módulo 10 de GS1, como el documento de la DGI sobre el cálculo).
 
 Las advertencias se ven en `/admin` y en el checklist. Con `Simulador__Estricto=true` rechazan como las demás.
 
@@ -145,6 +146,7 @@ Las advertencias se ven en `/admin` y en el checklist. Con `Simulador__Estricto=
 | `soapfault` | SOAP Fault con `detalle` |
 | `rechazo` | `codigo` S.. rechaza el sobre; E.. rechaza cada CFE del sobre; R.. rechaza el reporte. Con la operación `SOBRE`, un rechazo comercial (E20–E26) del receptor simulado |
 | `demora` | El resultado del sobre recién se puede consultar después de `segundos` |
+| `ocupado` | Con las operaciones de intercambio (`SOBRE`, `RESPUESTASOBRE`, `RESPUESTACFES`, `NOTIFICACIONANULACIONCFE`), la empresa simulada responde x002 ("Error al recibir… Intente luego") sin procesar el mensaje, para probar el reintento |
 
 ## Intercambio entre empresas
 
@@ -196,6 +198,26 @@ El set incluido ([set-pruebas.json](src/DgiSimulador/Homologacion/set-pruebas.js
 | `UrlPublica` | la del pedido | Dirección que se publica en los WSDL |
 | `UrlEntregaCorreo` | — | Dónde entrega correos el receptor simulado |
 | `Semilla`, `SetDePruebas` | — | Archivos JSON que se cargan al arrancar |
+
+## Versiones
+
+La versión sigue [SemVer](https://semver.org/lang/es/) desde la vista de un producto que se prueba con el simulador. Los cambios de cada versión están en [CHANGELOG.md](CHANGELOG.md).
+- **Patch** (`1.0.1`): correcciones, documentación y dependencias. Un CFE que se aceptaba se sigue aceptando, salvo que fuera un error del simulador.
+- **Minor** (`1.1.0`): controles nuevos o más estrictos, por ejemplo por una versión nueva de la normativa, y funciones nuevas. Puede hacer fallar las pruebas de un producto.
+- **Major** (`2.0.0`): cambios incompatibles en la API de administración, la configuración o la semilla.
+
+La imagen se publica para amd64 y arm64:
+
+| Tag | Qué trae |
+|---|---|
+| `1.2.3` | Esa versión, fija |
+| `1.2` | Las correcciones de 1.2 |
+| `1` | Los controles nuevos de 1.x |
+| `latest`, `sha-<commit>` | Cada cambio de `main`, antes de publicar una versión |
+
+Para un check obligatorio conviene fijar `X.Y`: solo se rompe si cambia la versión fijada. Un workflow no obligatorio que corre cada semana puede seguir `X` o `latest` para enterarse de los controles nuevos.
+
+Para publicar una versión, se sube `<Version>` en [DgiSimulador.csproj](src/DgiSimulador/DgiSimulador.csproj), se agrega la entrada en `CHANGELOG.md` y se empuja el tag `vX.Y.Z`. `imagen.yml` falla si el tag y el proyecto no coinciden.
 
 ## Supuestos a confirmar contra la DGI
 

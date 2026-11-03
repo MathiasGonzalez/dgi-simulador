@@ -34,7 +34,7 @@ internal static class Pagina
             .AE, .AS, .AR, .ok, .valido, .entregado { color:var(--ok); } .BE, .BS, .BR, .mal, .invalido, .error { color:var(--mal); } .CE, .aviso, .pendiente { color:var(--aviso); }
             a { color:var(--acento); } ul { margin:4px 0; padding-left:18px; } .vacio { color:var(--suave); }
             </style></head><body><main>
-            <h1>Simulador de los servicios de la DGI</h1>
+            <h1>Simulador de los servicios de la DGI <small class="vacio">{{H(Salud.Version)}}</small></h1>
             <p class="sub">Para desarrollo y CI. No reemplaza la homologación de la DGI. Datos en JSON en <a href="/admin/sobres">/admin/sobres</a>, <a href="/admin/cfes">/admin/cfes</a>, <a href="/admin/reportes">/admin/reportes</a> e <a href="/admin/intercambio">/admin/intercambio</a>.</p>
             <section><table>
             <tr><th>Recepción (ws_efactura)</th><td><code>{{H(baseUrl)}}/ePrueba/ws_eprueba</code></td></tr>
