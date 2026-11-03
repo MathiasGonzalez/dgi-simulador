@@ -5,13 +5,49 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   pruebas:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
         with:
           dotnet-version: "10.0.x"
+      - run: dotnet format DgiSimulador.slnx --verify-no-changes
       - run: dotnet test DgiSimulador.slnx
-      - run: docker build -t dgi-simulador .
+
+  # La imagen como la usan los productos: arranca, queda sana (HEALTHCHECK) y da de alta un emisor.
+  imagen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - run: docker build --build-arg "REVISION=${GITHUB_SHA}" -t dgi-simulador .
+      - name: Arranque y alta de un emisor
+        run: |
+          docker run -d --name dgi -p 8080:8080 dgi-simulador
+          for i in $(seq 1 60); do
+            estado=$(docker inspect --format '{{.State.Health.Status}}' dgi)
+            [ "$estado" = healthy ] && break
+            sleep 1
+          done
+          if [ "$estado" != healthy ]; then
+            echo "::error::La imagen no quedó sana en 60 segundos ($estado)."
+            docker logs dgi
+            exit 1
+          fi
+          curl -sf localhost:8080/salud | jq -e --arg sha "$GITHUB_SHA" '.estado == "ok" and .revision == $sha'
+          curl -sf -X POST localhost:8080/admin/emisores -H 'Content-Type: application/json' \
+            -d '{"rut":"211234560019","tipos":[101,111]}' | jq -e '(.caes | length) == 2 and (.certificado.pfx | length) > 0'

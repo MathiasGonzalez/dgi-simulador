@@ -45,17 +45,29 @@ public sealed class AdminTests(Simulador sim) : IClassFixture<Simulador>
     }
 
     [Fact]
-    public async Task LaEspecificacionOpenApiDescribeSoloLaAdministracion()
+    public async Task LaEspecificacionOpenApiDescribeSoloLaAdministracionYLaSalud()
     {
         using var http = sim.CreateClient();
         var json = await http.GetFromJsonAsync<JsonElement>("/openapi/v1.json");
         var rutas = json.GetProperty("paths").EnumerateObject().Select(p => p.Name).ToList();
         Assert.Contains("/admin/emisores", rutas);
         Assert.Contains("/admin/cae", rutas);
-        Assert.All(rutas, r => Assert.StartsWith("/admin/", r));
+        Assert.Contains("/salud", rutas);
+        Assert.All(rutas, r => Assert.True(r == "/salud" || r.StartsWith("/admin/", StringComparison.Ordinal), r));
+        Assert.Equal(Salud.Version, json.GetProperty("info").GetProperty("version").GetString());
         var esquemas = json.GetProperty("components").GetProperty("schemas");
         Assert.True(esquemas.GetProperty("NuevoEmisor").GetProperty("properties").TryGetProperty("tipos", out _));
         Assert.True(esquemas.TryGetProperty("EmisorCreado", out _));
+    }
+
+    [Fact]
+    public async Task LaSaludRespondeConLaVersionDelProyecto()
+    {
+        using var http = sim.CreateClient();
+        var json = await http.GetFromJsonAsync<JsonElement>("/salud");
+        Assert.Equal("ok", json.GetProperty("estado").GetString());
+        Assert.Matches(@"^\d+\.\d+\.\d+", json.GetProperty("version").GetString());
+        Assert.Equal(Salud.Version, json.GetProperty("version").GetString());
     }
 }
 

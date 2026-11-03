@@ -4,7 +4,7 @@ Cuánto se parece cada servicio del simulador a la DGI, en qué se basa esa esti
 
 > **Son estimaciones, no mediciones.** No hay capturas públicas de respuestas reales de `ePrueba`, ni el set de homologación es público. El porcentaje compara el simulador con los documentos oficiales, con los ejemplos que publica la DGI y con productos reales (UruFactura). Usalo como orden de magnitud: lo que vale es la columna "Qué falta".
 
-Última revisión: 2026-10-27 (pruebas de UruFactura y cf-factura en CI y descripciones del intercambio), con Formato CFE v25.2, Formato del Sobre v05, Formato del Reporte v13.2, Mensajes de Respuesta v19, XSD 1.44.2, el documento de servicios web de consultas v1.10 y el estándar de intercambio v1.3.
+Última revisión: 2026-11-03 (dígito verificador del GTIN, código x002 del intercambio y normativa sin cambios en los documentos implementados), con Formato CFE v25.2, Formato del Sobre v05, Formato del Reporte v13.2, Mensajes de Respuesta v19, XSD 1.44.2, el documento de servicios web de consultas v1.10 y el estándar de intercambio v1.3.
 
 ## Criterio
 
@@ -30,15 +30,14 @@ El porcentaje de cada servicio pondera cuatro cosas:
 | `ENVIOSCFE`, `ENVIOSSOBRE`, `ENVIOSREPORTE` y `RESPUESTAREPORTE` | **80–85 %** | media | Estructuras del XSD y ejemplos del documento | Filtros y casos vacíos que la DGI no documenta |
 | `EFACCONSULTARCFERECIBIDOS` | **75 %** | baja | Contrato del XSD | Solo devuelve CFE de las empresas simuladas |
 | Padrón (normal, de transición y comprimidos) | **90 %** | alta | gzip y base64 sobre UTF-8, como el anexo de la DGI | Los datos son sintéticos, a propósito |
-| Intercambio: `Sobre` | **80 %** | media | Códigos 1000 y 1001. Controles del receptor (S01–S07, S20, E02–E07). Acuses asincrónicos. `Codigo`, `Descripcion` y `Detalle` como el XSD oficial | Nunca responde 1002 ("Error al recibir el Sobre. Intente luego") |
-| Intercambio: `RespuestaSobre`, `RespuestaCFEs` y `NotificacionAnulacionCFE` | **85 %** | media | Códigos x000 y x001 con las descripciones de las tablas del estándar ("ACK Sobre Recibido.", "ACKCFE Recibido.", "Anulación CFEs Recibido."). Valida XSD y firma | Nunca devuelve x002. El ejemplo del estándar dice "ACKSobre Recibido." y su tabla "ACK Sobre Recibido."; se usa la tabla |
+| Intercambio: `Sobre` | **80 %** | media | Códigos 1000 y 1001. Controles del receptor (S01–S07, S20, E02–E07). Acuses asincrónicos. `Codigo`, `Descripcion` y `Detalle` como el XSD oficial | Responde 1002 ("Error al recibir el Sobre. Intente luego.") solo con la falla programada `ocupado`, no por carga |
+| Intercambio: `RespuestaSobre`, `RespuestaCFEs` y `NotificacionAnulacionCFE` | **85 %** | media | Códigos x000 y x001 con las descripciones de las tablas del estándar ("ACK Sobre Recibido.", "ACKCFE Recibido.", "Anulación CFEs Recibido."). Valida XSD y firma | Devuelve x002 solo con la falla programada `ocupado`, y las glosas de 2002, 3002 y 4002 se infieren de la del 1002. El ejemplo del estándar dice "ACKSobre Recibido." y su tabla "ACK Sobre Recibido."; se usa la tabla |
 
 **En conjunto: cerca de 80 %.** Cada servicio pesa según su lugar en la homologación: sobre 40 %, consulta del envío 20 %, reporte 20 %, consultas 10 % e intercambio 10 %.
 
 ## Validaciones del Formato CFE que faltan
 
 En estos casos el simulador acepta CFE que la DGI podría rechazar:
-- dígito verificador del GTIN;
 - indicadores de facturación permitidos según el tipo de CFE y el CAE especial;
 - datos del propietario de la mercadería (A-C6.x);
 - indicador de agente responsable cuando hay retenciones;
@@ -58,6 +57,8 @@ Cuando la DGI responda distinto que el simulador para el mismo XML, agregá el c
 - **Contingencia.** Con problemas que tienen equivalente en `ObsCFC` queda CE; si no, BE.
 - **Diferencias con el CFE referenciado.** El formato exige que fecha, moneda y tipo de cambio de la referencia (F-C7, F-C9 y F-C10) sean los del CFE referenciado, y que el monto (F-C8) no supere su total a pagar. No dice con qué motivo se rechaza; el simulador usa E12.
 - **Ejemplos de cuenta ajena de la DGI.** Los dos sobres de ejemplo con complemento fiscal (2011, XSD v1.11) informan todo en `MntNoGrv`, aunque dos ítems son a tasa básica, y no informan IVA. El simulador sigue las fórmulas del formato vigente (A-C112 y A-C117) y los rechaza con E05. Se tomaron como ejemplos de cómo va el complemento fiscal, no de los totales.
+- **Dígito verificador del GTIN.** La DGI publica cómo calcularlo, pero el formato no dice con qué motivo rechaza un código mal formado ni qué valores de `TpoCod` lo exigen. El simulador lo controla en `GTIN` y `EAN`, y lo advierte con E05.
+- **Glosas de 2002, 3002 y 4002 del intercambio.** Solo se conoce la del 1002 ("Error al recibir el Sobre. Intente luego."); las otras siguen el mismo patrón con "ACK Sobre", "ACKCFE" y "Anulación CFEs".
 - **Tamaño máximo.** "2 Mega" se toma como 2048 KB; si la DGI cuenta 2.000.000 bytes, el margen es de 48 KB. El reporte no tiene un máximo publicado.
 - **Validador de .NET.** No admite enteros de más de 29 dígitos en `xs:integer`. El simulador ignora ese error en `ds:X509SerialNumber`, que en los certificados reales tiene 38 dígitos.
 

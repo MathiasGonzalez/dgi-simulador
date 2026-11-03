@@ -137,9 +137,8 @@ Instructivo Reporte de Incidentes (archivo .pdf 822 KB)
 Instructivo Registro de Proveedores Habilitados (archivo .pdf 301 KB)
 Clave Pública para ambiente de Producción
 Clave Pública para ambiente de Prueba (válida hasta el 18/09/2024)
-C lave Pública para ambiente de Prueba (válida desde del 19/09/2024 )
-Sustituido
-Publicado
+Clave Pública para ambiente de Prueba (válida desde del 19/09/2024)
+Certificado público de DGI y los de la Autoridad Certificadora
 Nombre remitente
 E-mail remitente
 Nombre del destinatario
@@ -185,6 +184,7 @@ https://www.efactura.dgi.gub.uy/files/Formato_Sobre_v05_pdf?es
 https://www.efactura.dgi.gub.uy/files/Instructivo_registro_proveedor?es
 https://www.efactura.dgi.gub.uy/files/aws_efactura_intercambio_xsd1_xsd?es
 https://www.efactura.dgi.gub.uy/files/calculo-digito-verificador-codigos-gtin-25444?es
+https://www.efactura.dgi.gub.uy/files/certificados_ssl_asterisco_dgi_gub_uy-zip-25564?es
 https://www.efactura.dgi.gub.uy/files/clave-publica-para-ambiente-de-prueba?es
 https://www.efactura.dgi.gub.uy/files/clave_ambiente_prueba_19_09_24?es
 https://www.efactura.dgi.gub.uy/files/clave_publica_produccion?es

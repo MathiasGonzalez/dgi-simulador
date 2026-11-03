@@ -19,6 +19,7 @@ internal sealed class Fallas(Almacen almacen)
         ["soapfault"] = "SOAP Fault con 'detalle' como faultstring.",
         ["rechazo"] = "Rechaza con 'codigo': S.. el sobre, E.. cada CFE del sobre o R.. el reporte.",
         ["demora"] = "El resultado del sobre recién se puede consultar después de 'segundos'.",
+        ["ocupado"] = "El servicio de intercambio de una empresa simulada responde x002 (error al recibir, intente luego) sin procesar el mensaje.",
     };
 
     private static readonly string[] DeTransporte = ["timeout", "http500", "http503", "html502", "soapfault"];

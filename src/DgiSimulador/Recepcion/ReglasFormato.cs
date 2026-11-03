@@ -26,6 +26,7 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
             return hallazgos;
 
         Emisor(cfe, hallazgos);
+        CodigosDeItem(cfe, hallazgos);
         Lineas(cfe, familia, hallazgos);
         if (familia != Familia.Remito)
             Totales(cfe, familia, hallazgos);
@@ -43,6 +44,23 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
     }
 
     // --- Ítems ------------------------------------------------------------------------------
+
+    /// <summary>
+    /// Un código GTIN (o EAN) del ítem lleva el dígito verificador de GS1, que la DGI explica en "Cálculo del dígito
+    /// verificador de códigos GTIN". El formato no dice con qué motivo se rechaza: se advierte.
+    /// </summary>
+    private static void CodigosDeItem(CfeLeido cfe, List<Hallazgo> h)
+    {
+        foreach (var item in cfe.Items)
+        {
+            foreach (var codigo in item.Hijos("CodItem"))
+            {
+                var tipo = codigo.Texto("TpoCod")?.ToUpperInvariant();
+                if (tipo is "GTIN" or "EAN" && codigo.Texto("Cod") is { } gtin && !Documentos.GtinValido(gtin))
+                    h.Add(new("E05", $"Línea {item.Texto("NroLinDet")}: el código {tipo} {gtin} no tiene un dígito verificador válido.", Confirmado: false));
+            }
+        }
+    }
 
     private void Lineas(CfeLeido cfe, Familia familia, List<Hallazgo> h)
     {
@@ -441,5 +459,16 @@ internal static class Documentos
         int[] pesos = [2, 9, 8, 7, 6, 3, 4];
         var suma = pesos.Select((p, i) => p * (digitos[i] - '0')).Sum();
         return (10 - suma % 10) % 10 == digitos[7] - '0';
+    }
+
+    /// <summary>GTIN-8, 12, 13 o 14: módulo 10 de GS1, con pesos 3 y 1 alternados desde el dígito anterior al verificador.</summary>
+    internal static bool GtinValido(string gtin)
+    {
+        if (gtin.Length is not (8 or 12 or 13 or 14) || !gtin.All(char.IsAsciiDigit))
+            return false;
+        var suma = 0;
+        for (int i = gtin.Length - 2, peso = 3; i >= 0; i--, peso = 4 - peso)
+            suma += (gtin[i] - '0') * peso;
+        return (10 - suma % 10) % 10 == gtin[^1] - '0';
     }
 }
