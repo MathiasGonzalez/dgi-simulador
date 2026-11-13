@@ -63,7 +63,7 @@ jobs:
              - **Mensajes de respuesta (motivos S, E, C y R):** `src/DgiSimulador/Motivos.cs`. Las glosas tienen que ser las enumeraciones de `Glosa` en `DGITypes.xsd`.
              - **Formato CFE:** `src/DgiSimulador/Recepcion/ReglasFormato.cs` y `Recepcion/ControlCfe.cs`.
              - **Sobre:** `Recepcion/RecepcionSobre.cs` y los límites de `Opciones.cs` / `appsettings.json`.
-             - **Reporte diario:** `Recepcion/RecepcionReporte.cs`.
+             - **Reporte diario:** `Recepcion/ReglasReporte.cs` y `Recepcion/RecepcionReporte.cs`.
              - **Consultas:** `Consultas/ServicioConsultas.cs`. **Intercambio:** `Intercambio/`.
              - **Resoluciones (topes, montos, plazos):** las opciones de `Opciones.cs` y las reglas que las usan.
           3. Reglas del simulador:
