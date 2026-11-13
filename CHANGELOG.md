@@ -12,13 +12,18 @@ Controles nuevos del Formato CFE v25.2, que pueden rechazar (E05) un CFE que la 
 - **Mandante del complemento fiscal:** obligatorio en la cuenta ajena salvo con `SecProf` 2 (antes se exigía siempre), con país, documento y nombre válidos, y distinto del emisor.
 - **GTIN:** con `TpoCod` `GTIN8`, `GTIN12`, `GTIN13` o `GTIN14`, el dígito verificador inválido rechaza. Con `GTIN` o `EAN` sigue siendo advertencia.
 
+Controles nuevos del Formato del Reporte v13.2, que pueden rechazar (R04) un reporte que la 1.0 aceptaba:
+- **Cantidades y rangos:** `CantDocsUtil` y `CantDocsAnulados` son los números de sus rangos, y los utilizados incluyen a los anulados. Cada rango va del 1 al 9999999.
+- **Montos de cada fecha y sucursal:** IVA = neto × tasa, con las tasas vigentes; total = suma de los netos y los IVA; "otra tasa" con neto e IVA a la vez; sin repetir fecha y sucursal. Se admite 0,01 por comprobante emitido, por el redondeo de cada uno.
+- **Fechas:** entre 2011 y 2050, y la del comprobante hasta 60 días adelante.
+
 Seguridad:
 - `Simulador__ClaveAdmin` protege `/admin` con `Authorization: Bearer` o HTTP Basic. Sin definirla todo sigue como antes.
 - `POST /admin/certificados` ya no acepta `archivo`: leer del disco queda solo para la semilla.
 - `dotnet run` escucha en `localhost` y `compose.yaml` publica en `127.0.0.1`. La imagen no cambia: sigue escuchando en todas las interfaces del contenedor.
 - `SECURITY.md` y la sección Seguridad del README.
 
-Los CI de cf-factura (21 tipos y reporte) y de UruFactura (14 pruebas, 39 CFE) pasan contra esta versión sin advertencias.
+Los CI de cf-factura (21 tipos y reporte) y de UruFactura (14 pruebas, 39 CFE y su reporte) pasan contra esta versión sin advertencias.
 
 ## 1.0.0 — 2026-11-03
 

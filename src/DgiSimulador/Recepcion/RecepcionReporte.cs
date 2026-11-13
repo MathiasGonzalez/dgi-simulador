@@ -9,8 +9,9 @@ using Microsoft.Extensions.Options;
 namespace DgiSimulador.Recepcion;
 
 /// <summary>
-/// <c>EFACRECEPCIONREPORTE</c>: controla el reporte diario (R01 a R06) y responde <c>ACKRepDiario</c>. La coincidencia con
-/// los CFE recibidos ese día no está detallada en el formato: se anota como advertencia (rechaza en modo estricto).
+/// <c>EFACRECEPCIONREPORTE</c>: controla el reporte diario (R01 a R06) y responde <c>ACKRepDiario</c>. Las reglas del
+/// formato están en <see cref="ReglasReporte"/>. La coincidencia con los CFE recibidos ese día no está detallada en el
+/// formato: se anota como advertencia (rechaza en modo estricto).
 /// </summary>
 internal sealed class RecepcionReporte(Almacen almacen, Autoridad autoridad, Fallas fallas, IOptions<OpcionesSimulador> opciones, TimeProvider reloj)
 {
@@ -79,8 +80,10 @@ internal sealed class RecepcionReporte(Almacen almacen, Autoridad autoridad, Fal
                 if (sec != esperada)
                     motivos.Add(Motivos.DeReporte("R05", $"SecEnvio es {sec} y para el {Hora.Formato(dia)} corresponde {esperada}."));
             }
+            var zonas = ReglasReporte.Zonas(raiz);
+            hallazgos.AddRange(ReglasReporte.Controlar(raiz, zonas, _opciones, Hora.Fecha(ahora)));
             if (fecha is { } diaResumen)
-                Consistencia(raiz, rut, diaResumen, hallazgos);
+                Consistencia(zonas, rut, diaResumen, hallazgos);
         }
 
         if (motivos.Count == 0 && fallas.Rechazo(Operacion, 'R') is { } forzado && Motivos.Reporte.ContainsKey(forzado))
@@ -98,45 +101,11 @@ internal sealed class RecepcionReporte(Almacen almacen, Autoridad autoridad, Fal
         return acuse;
     }
 
-    /// <summary>Una zona <c>Rsmn_*</c> del reporte: el tipo de comprobante y lo que informa.</summary>
-    private sealed record Zona(string Nombre, int Tipo, long? Utilizados, long? Emitidos, long? Anulados,
-        List<(string Serie, long Desde, long Hasta)> Usados, List<(string Serie, long Desde, long Hasta)> RangosAnulados, decimal Total);
-
-    private static List<Zona> Zonas(XmlElement reporte) =>
-    [
-        .. reporte.Hijos().Where(e => e.LocalName.StartsWith("Rsmn_", StringComparison.Ordinal)).Select(zona =>
-        {
-            var datos = zona.Hijo("RsmnData");
-            var tipo = (int)(XmlUtil.Entero(zona.Texto("TipoComp")) ?? 0);
-            static List<(string, long, long)> Rangos(XmlElement? rangos, string item) =>
-            [
-                .. rangos.Hijos(item).Select(r => (r.Texto("Serie") ?? "", XmlUtil.Entero(r.Texto("NroDesde")) ?? 0, XmlUtil.Entero(r.Texto("NroHasta")) ?? 0)),
-            ];
-            var total = datos.Hijo("Montos").Hijos().Sum(m => XmlUtil.Decimal(m.Texto("TotMntTotal")) ?? XmlUtil.Decimal(m.Texto("TotMntRetenido")) ?? 0m);
-            return new Zona(zona.LocalName, tipo, XmlUtil.Entero(datos.Texto("CantDocsUtil")),
-                XmlUtil.Entero(datos.Texto("CantDocsEmi")) ?? XmlUtil.Entero(datos.Texto("CantCFCEmi")), XmlUtil.Entero(datos.Texto("CantDocsAnulados")),
-                Rangos(datos.Hijo("RngDocsUtil"), "RDU_Item"), Rangos(datos.Hijo("RngDocsAnulados"), "RDA_Item"), total);
-        }),
-    ];
-
     /// <summary>
-    /// Las cantidades del reporte entre sí (las documenta <c>ReporteDiarioCFE.xsd</c>: rechazan) y contra los CFE aceptados
-    /// del día (inferido: advertencia).
+    /// Lo que el reporte informa contra los CFE aceptados del día. El formato no detalla este control: se advierte.
     /// </summary>
-    private void Consistencia(XmlElement reporte, string rut, DateOnly fecha, List<Hallazgo> hallazgos)
+    private void Consistencia(IReadOnlyList<ZonaReporte> zonas, string rut, DateOnly fecha, List<Hallazgo> hallazgos)
     {
-        var zonas = Zonas(reporte);
-        foreach (var zona in zonas)
-        {
-            if (zona.Utilizados is { } u && zona.Emitidos is { } e && u != e + (zona.Anulados ?? 0))
-                hallazgos.Add(new("R04", $"{zona.Nombre}: CantDocsUtil {u} no es CantDocsEmi {e} + CantDocsAnulados {zona.Anulados ?? 0}."));
-        }
-
-        var cantidad = XmlUtil.Entero(reporte.Hijo("Caratula").Texto("CantComprobantes"));
-        var suma = zonas.Sum(z => z.Utilizados ?? z.Emitidos ?? 0);
-        if (cantidad is { } cc && cc != suma)
-            hallazgos.Add(new("R04", $"CantComprobantes es {cc} y la suma de los CFE utilizados y los CFC emitidos de las zonas da {suma}."));
-
         var recibidos = almacen.CfesAceptadosDelDia(rut, fecha).Where(x => x.Tipo is not null).GroupBy(x => x.Tipo!.Value).ToDictionary(g => g.Key, g => g.ToList());
         foreach (var tipo in recibidos.Keys.Union(zonas.Select(z => z.Tipo)).Order())
         {
@@ -163,7 +132,7 @@ internal sealed class RecepcionReporte(Almacen almacen, Autoridad autoridad, Fal
 
     private void GuardarAnulados(XmlElement reporte, string rut, DateOnly fecha)
     {
-        foreach (var zona in Zonas(reporte))
+        foreach (var zona in ReglasReporte.Zonas(reporte))
             foreach (var (serie, desde, hasta) in zona.RangosAnulados)
                 almacen.GuardarAnulados(rut, zona.Tipo, serie, desde, hasta, fecha);
     }

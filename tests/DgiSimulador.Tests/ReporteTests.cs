@@ -147,9 +147,80 @@ public sealed class ReporteTests(Simulador sim) : IClassFixture<Simulador>
     public async Task RangoAnulado_DespuesEsE01()
     {
         var (emisor, cae) = await EmisorConETicket();
-        var zona = new ZonaPrueba(101, "A", 1, 1, 100m, Anulados: 2, RangoAnulado: (2, 3));
+        // Los utilizados incluyen a los anulados: el rango va del 1 al 3, con un emitido y dos anulados.
+        var zona = new ZonaPrueba(101, "A", 1, 3, 100m, Emitidos: 1, Anulados: 2, RangoAnulado: (2, 3));
         Assert.Equal("AR", SobreTests.Estado(await sim.EnviarReporte(emisor.Certificado, ReportesPrueba.Armar(emisor, EmisorPrueba.Hoy, 1, [zona]))));
         var (_, cfes) = await sim.Enviar(emisor, emisor.Firmar(emisor.Cfe(cae, 3)));
         Assert.Contains("E01", SobreTests.Codigos(cfes, "MotivosRechazoCF"));
+    }
+
+    // --- Reglas del Formato del Reporte v13.2 (R04) ----------------------------------------------
+
+    private static readonly ZonaPrueba UnETicket = new(101, "A", 1, 1, 100m);
+
+    /// <summary>Manda un reporte de un e-Ticket con un cambio y devuelve los detalles de los rechazos R04.</summary>
+    private async Task<List<string>> Rechazos(Action<XmlDocument> modificar, ZonaPrueba? zona = null)
+    {
+        var (emisor, _) = await EmisorConETicket();
+        var acuse = await sim.EnviarReporte(emisor.Certificado, ReportesPrueba.Armar(emisor, EmisorPrueba.Hoy, 1, [zona ?? UnETicket], modificar: modificar));
+        Assert.All(SobreTests.Codigos(acuse), c => Assert.Equal("R04", c));
+        return [.. sim.Almacen.Reportes(emisor.Rut).Single().Motivos.Select(m => m.Detalle ?? "")];
+    }
+
+    private static void Poner(XmlDocument doc, string campo, string valor) => doc.DocumentElement.Buscar(campo)!.InnerText = valor;
+
+    [Fact]
+    public async Task ElIvaEsElNetoPorLaTasa_R04()
+    {
+        Assert.Contains(await Rechazos(doc => Poner(doc, "MntIVATasaBas", "25.00")), d => d.Contains("MntIVATasaBas informa 25.00") && d.Contains("da 22.00"));
+        // Al cambiar el IVA tampoco cierra el total, que es la suma de los netos y los IVA.
+        Assert.Contains(await Rechazos(doc => Poner(doc, "MntIVATasaBas", "25.00")), d => d.Contains("TotMntTotal informa 122.00"));
+    }
+
+    [Fact]
+    public async Task LaTasaTieneQueSerLaVigente_R04() =>
+        Assert.Contains(await Rechazos(doc => Poner(doc, "IVATasaBas", "23.00")), d => d.Contains("la tasa vigente es 22"));
+
+    [Fact]
+    public async Task ElTotalEsLaSumaDeLosConceptos_R04() =>
+        Assert.Contains(await Rechazos(doc => Poner(doc, "TotMntTotal", "130.00")), d => d.Contains("TotMntTotal informa 130.00") && d.Contains("da 122.00"));
+
+    [Fact]
+    public async Task LosUtilizadosSonLosNumerosDeSusRangos_R04()
+    {
+        Assert.Contains(await Rechazos(doc => Poner(doc, "NroHasta", "5")), d => d.Contains("los rangos de RngDocsUtil suman 5 números"));
+        Assert.Contains(await Rechazos(_ => { }, new ZonaPrueba(101, "A", 1, 3, 100m, Emitidos: 1, Anulados: 2)),
+            d => d.Contains("CantDocsAnulados es 2 y los rangos de RngDocsAnulados suman 0"));
+    }
+
+    [Fact]
+    public async Task RangoConElFinalMenorQueElInicial_R04() =>
+        Assert.Contains(await Rechazos(doc => { Poner(doc, "NroDesde", "9"); Poner(doc, "NroHasta", "3"); }), d => d.Contains("el final mayor o igual que el inicial"));
+
+    [Fact]
+    public async Task FechaDelComprobanteMuyAdelante_R04() =>
+        Assert.Contains(await Rechazos(doc => doc.DocumentElement.Buscar("Mnts_FyT_Item")!.Hijo("Fecha")!.InnerText = Hora.Formato(EmisorPrueba.Hoy.AddDays(90))),
+            d => d.Contains("no pasar de hoy + 60 días"));
+
+    [Fact]
+    public async Task LaTablaDeMontosNoRepiteFechaYSucursal_R04() =>
+        Assert.Contains(await Rechazos(doc =>
+        {
+            var linea = doc.DocumentElement.Buscar("Mnts_FyT_Item")!;
+            linea.ParentNode!.AppendChild(linea.CloneNode(true));
+        }), d => d.Contains("repite la fecha"));
+
+    [Fact]
+    public async Task ElRedondeoDeCadaComprobanteNoRechaza()
+    {
+        // Tres comprobantes de 33,33: el IVA de cada uno es 7,33 (suman 21,99) y la fórmula sobre el neto da 22,00.
+        var (emisor, _) = await EmisorConETicket();
+        var acuse = await sim.EnviarReporte(emisor.Certificado, ReportesPrueba.Armar(emisor, EmisorPrueba.Hoy, 1, [new ZonaPrueba(101, "A", 1, 3, 99.99m)],
+            modificar: doc =>
+            {
+                Poner(doc, "MntIVATasaBas", "21.99");
+                Poner(doc, "TotMntTotal", "121.98");
+            }));
+        Assert.Equal("AR", SobreTests.Estado(acuse));
     }
 }

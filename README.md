@@ -127,7 +127,7 @@ Los controles siguen los documentos vigentes de la DGI: Formato CFE v25.2, Forma
 | Reporte | No es XML o la raíz no es `Reporte` | R01 |
 | | RUC del reporte, de la firma y del envío | R02 |
 | | Firma y certificado | R03 |
-| | XSD, `CantDocsUtil` = emitidos + anulados, `CantComprobantes` = utilizados + CFC emitidos | R04 |
+| | XSD y reglas del formato. Cantidades: `CantComprobantes` = utilizados + CFC emitidos, `CantDocsUtil` = emitidos + anulados, y utilizados y anulados iguales a los números de sus rangos (del 1 al 9999999). Montos de cada fecha y sucursal: IVA = neto × tasa, tasas vigentes, total = suma de netos e IVA, "otra tasa" con neto e IVA a la vez, sin repetir fecha y sucursal, fecha hasta 60 días adelante. Carátula: dígito verificador del RUC y fechas entre 2011 y 2050 | R04 |
 | | `SecEnvio` correlativo por fecha | R05 |
 | | `FechaResumen` posterior a la recepción | R06 |
 
