@@ -27,6 +27,8 @@ docker compose up --wait   # con --build compila la imagen local
 dotnet run --project src/DgiSimulador
 ```
 
+Fuera del contenedor escucha solo en `localhost`, y `compose.yaml` publica el puerto solo en esta máquina: la API de administración no tiene clave por defecto ([Seguridad](#seguridad)).
+
 `GET /salud` responde cuando el simulador está listo, con su versión y el commit de la imagen. La imagen tiene un `HEALTHCHECK` que lo usa, así que los servicios de GitHub Actions y `docker compose up --wait` esperan solos. Qué tag usar está en [Versiones](#versiones).
 
 La página de inspección está en `http://localhost:8080/admin`. Muestra:
@@ -109,6 +111,11 @@ Los controles siguen los documentos vigentes de la DGI: Formato CFE v25.2, Forma
 | | Serie, número, rango o vencimiento distintos de los del CAE | E03 |
 | | Firma XMLDSig y certificado del emisor. Si la firma trae solo `X509IssuerSerial`, como en el sobre de ejemplo de la DGI, se verifica con el certificado de la carátula | E04 |
 | | XSD y reglas del formato. Ítems: monto, precio y entrega gratuita. Totales: por indicador con descuentos y recargos globales, IVA, `MntTotal`, `MntPagar`, retenciones y créditos fiscales. Receptor: datos obligatorios de cada tipo, país y número del documento, secreto profesional, e-Ticket por encima de 5.000 UI o con retenciones. También cobranza propia, referencias, fechas hasta 60 días adelante, firma desde el 2011-10-01 hasta mañana y dígitos verificadores | E05 |
+| | Código de ítem `GTIN8`, `GTIN12`, `GTIN13` o `GTIN14` con el dígito verificador de GS1 | E05 |
+| | Indicadores de facturación de cada régimen: `MntBruto` 3 y CAE especial de IVA mínimo o Monotributo (sin ítems gravados, y uno exige el otro), CAE de exonerado (con causal y sin ítems gravados), `IVAalDia` y `SecProf` del mandante solo en cuenta ajena, y en la e-Boleta de entrada los indicadores 13, 14, 15 y 17 según el documento del vendedor y `IndCompraMEReventa` | E05 |
+| | Propietario de la mercadería de un remito (`IndPropiedad`): tipo, país y número de documento con su dígito verificador, y nombre | E05 |
+| | `IndAgenteResp` y la tabla de retenciones del ítem van juntos. `CodRet` es un número mayor que cero y, si se configura `CodigosDeRetencion`, un código de esa lista | E05 |
+| | Mandante del complemento fiscal: obligatorio en la venta por cuenta ajena (salvo `SecProf` 2) y en la e-Boleta con `IndCompraMEReventa` 2; país y documento según el tipo, con dígito verificador; distinto del emisor; con nombre | E05 |
 | | Total en pesos mayor que `MontoHabitualMaximo` | E06 |
 | | Firmado fuera de la vigencia del CAE | E07 |
 | | RUC del complemento fiscal | E08 |
@@ -130,7 +137,10 @@ Los controles siguen los documentos vigentes de la DGI: Formato CFE v25.2, Forma
 - los totales con ítems a rebajar del e-Remito de Exportación (indicador 8) y con anulaciones del e-Resguardo (indicador 9). El formato escribe "∑B-C24 − ∑B-C24 (si B-C4=8)" y no aclara si la primera suma incluye esos ítems;
 - la consistencia del reporte con los CFE del día: cantidades, rangos y montos;
 - la firma de un CFE sin `X509IssuerSerial`. La zona I del formato pide el número de serie y el emisor del certificado, y los ejemplos de la DGI siempre lo traen;
-- el dígito verificador de un código de ítem `GTIN` o `EAN` (módulo 10 de GS1, como el documento de la DGI sobre el cálculo).
+- el dígito verificador de un código de ítem con los tipos `GTIN` o `EAN`, que el formato ya no lista (con `GTIN8`, `GTIN12`, `GTIN13` y `GTIN14` rechaza);
+- el indicador de facturación 16 sin `MntBruto` 3, fuera de la cuenta ajena;
+- una venta por cuenta ajena con `MntBruto` 3: el campo K-C1 dice que se rechaza y A-C10 la trata como excepción;
+- el complemento fiscal en un comprobante que no es de cuenta ajena ni una e-Boleta con `IndCompraMEReventa` 2.
 
 Las advertencias se ven en `/admin` y en el checklist. Con `Simulador__Estricto=true` rechazan como las demás.
 
@@ -190,6 +200,8 @@ El set incluido ([set-pruebas.json](src/DgiSimulador/Homologacion/set-pruebas.js
 | `TamanoMaximoKb` | 2048 | Máximo de un sobre (S07): 2 MB según el Formato del Sobre v05 |
 | `TamanoMaximoReporteKb` | 10240 | Máximo de un reporte (R01). La DGI no publica uno |
 | `Confianza` | `Registrados` | `Cualquiera` acepta cualquier certificado vigente con RUT |
+| `ClaveAdmin` | — | Clave de `/admin` ([Seguridad](#seguridad)). Sin valor, queda abierto |
+| `CodigosDeRetencion__{n}` | — | Códigos de retención, percepción y crédito fiscal registrados (B-C20). Sin la lista solo se controla que `CodRet` sea un número mayor que cero |
 | `RutsDgi` | 214844360018 y 219999830019 | `RutReceptor` aceptados en el sobre |
 | `UnidadIndexada__{año}` | — | UI al 31/12, para el tope de 5.000 UI del año siguiente |
 | `TiposDeCambio__{moneda}__Minimo/Maximo` | USD y EUR entre 20 y 80/90 | Rango del tipo de cambio (E10) |
@@ -198,6 +210,17 @@ El set incluido ([set-pruebas.json](src/DgiSimulador/Homologacion/set-pruebas.js
 | `UrlPublica` | la del pedido | Dirección que se publica en los WSDL |
 | `UrlEntregaCorreo` | — | Dónde entrega correos el receptor simulado |
 | `Semilla`, `SetDePruebas` | — | Archivos JSON que se cargan al arrancar |
+
+## Seguridad
+
+El simulador es para una máquina de desarrollo o un job de CI. **No hay que exponerlo en una red sin clave.** Quien llega a `/admin` puede bajar las claves privadas de los certificados de prueba, borrar el estado y hacer que el simulador llame a la URL que quiera (`urlServicio` del padrón, `url` de `/admin/intercambio/emitir`).
+
+- **Por defecto solo se llega desde la misma máquina:** `dotnet run` escucha en `localhost` y `compose.yaml` publica en `127.0.0.1`. En GitHub Actions, el servicio solo es alcanzable desde el runner del job.
+- **Para abrirlo a otras máquinas,** definí `Simulador__ClaveAdmin`. Cada pedido a `/admin` manda entonces `Authorization: Bearer <clave>`; el navegador pide usuario y contraseña (cualquier usuario, la clave como contraseña). `/salud`, `/openapi/v1.json` y los servicios SOAP siguen abiertos: estos últimos solo aceptan mensajes firmados con un certificado registrado.
+- **Los certificados son de prueba.** La CA del simulador y el certificado de "la DGI" firman lo que les pidan: un producto nunca tiene que confiar en ellos fuera de sus pruebas.
+- **Corre en HTTP.** Si hace falta HTTPS, va detrás de un proxy que lo termine.
+
+Cómo avisar de un problema de seguridad está en [SECURITY.md](SECURITY.md).
 
 ## Versiones
 

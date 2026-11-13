@@ -60,6 +60,13 @@ public sealed class OpcionesSimulador
     /// <summary>Si una referencia a un CFE que el simulador no recibió rechaza (E12) o solo se advierte.</summary>
     public bool ExigirReferenciasConocidas { get; set; } = true;
 
+    /// <summary>
+    /// Códigos de retención, percepción y crédito fiscal registrados en la DGI (número de formulario más número de
+    /// línea, B-C20). La DGI no publica la tabla en los formatos: sin configurar solo se controla que sea un número
+    /// mayor que cero; con la lista, un código que no está rechaza (E05). Del 9999001 al 9999999 nunca se validan.
+    /// </summary>
+    public List<string>? CodigosDeRetencion { get; set; }
+
     /// <summary>Tasa mínima de IVA vigente.</summary>
     public decimal TasaMinima { get; set; } = 10m;
 
@@ -74,6 +81,13 @@ public sealed class OpcionesSimulador
     /// correo de <c>wrangler dev</c>: <c>http://localhost:8787/cdn-cgi/handler/email</c>.
     /// </summary>
     public string? UrlEntregaCorreo { get; set; }
+
+    /// <summary>
+    /// Clave de la API de administración. Sin valor, <c>/admin</c> queda abierto: quien llega al puerto baja las claves de
+    /// los certificados de prueba, borra el estado y hace que el simulador llame a la URL que quiera. Hay que definirla
+    /// si el simulador escucha fuera de la máquina o del job de CI (SECURITY.md).
+    /// </summary>
+    public string? ClaveAdmin { get; set; }
 
     /// <summary>Archivo JSON con emisores, certificados y CAE que se cargan al iniciar.</summary>
     public string? Semilla { get; set; }

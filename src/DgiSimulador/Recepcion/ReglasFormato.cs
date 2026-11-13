@@ -15,7 +15,7 @@ internal sealed record Hallazgo(string Codigo, string Detalle, bool Confirmado =
 /// montos de los ítems, totales por indicador de facturación, IVA, total a pagar, retenciones, receptor, referencias
 /// de las notas y documentos. Escritos a partir del Formato de los CFE v25.2, sin código de los productos que se prueban.
 /// </summary>
-internal sealed class ReglasFormato(OpcionesSimulador opciones)
+internal sealed partial class ReglasFormato(OpcionesSimulador opciones)
 {
     private decimal Tolerancia => opciones.Tolerancia;
 
@@ -30,7 +30,12 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
         Lineas(cfe, familia, hallazgos);
         if (familia != Familia.Remito)
             Totales(cfe, familia, hallazgos);
+        Indicadores(cfe, familia, hallazgos);
+        if (familia is Familia.Remito or Familia.RemitoExportacion)
+            Propietario(cfe, hallazgos);
         Retenciones(cfe, familia, hallazgos);
+        AgenteYCodigos(cfe, familia, hallazgos);
+        Mandante(cfe, familia, hallazgos);
         Receptor(cfe, familia, hallazgos);
         Notas(cfe, hallazgos);
         TipoDeCambio(cfe, hallazgos);
@@ -46,8 +51,9 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
     // --- Ítems ------------------------------------------------------------------------------
 
     /// <summary>
-    /// Un código GTIN (o EAN) del ítem lleva el dígito verificador de GS1, que la DGI explica en "Cálculo del dígito
-    /// verificador de códigos GTIN". El formato no dice con qué motivo se rechaza: se advierte.
+    /// B-C2 y B-C3: con el tipo de código GTIN8, GTIN12, GTIN13 o GTIN14 la DGI valida el dígito verificador de GS1
+    /// ("Cálculo del dígito verificador de códigos GTIN"). Con los nombres anteriores (GTIN, EAN), que el formato ya no
+    /// lista, solo se advierte.
     /// </summary>
     private static void CodigosDeItem(CfeLeido cfe, List<Hallazgo> h)
     {
@@ -56,8 +62,10 @@ internal sealed class ReglasFormato(OpcionesSimulador opciones)
             foreach (var codigo in item.Hijos("CodItem"))
             {
                 var tipo = codigo.Texto("TpoCod")?.ToUpperInvariant();
-                if (tipo is "GTIN" or "EAN" && codigo.Texto("Cod") is { } gtin && !Documentos.GtinValido(gtin))
-                    h.Add(new("E05", $"Línea {item.Texto("NroLinDet")}: el código {tipo} {gtin} no tiene un dígito verificador válido.", Confirmado: false));
+                if (tipo is not ("GTIN8" or "GTIN12" or "GTIN13" or "GTIN14" or "GTIN" or "EAN") || codigo.Texto("Cod") is not { } gtin || Documentos.GtinValido(gtin))
+                    continue;
+                h.Add(new("E05", $"Línea {item.Texto("NroLinDet")}: el código {tipo} {gtin} no tiene un dígito verificador válido.",
+                    Confirmado: tipo is not ("GTIN" or "EAN")));
             }
         }
     }

@@ -78,14 +78,15 @@ public sealed record CorreoRecibido(string Tipo, string Detalle, IReadOnlyList<A
 
 /// <summary>
 /// API de administración (<c>/admin</c>): padrón, certificados, CAE, inspección de lo recibido, fallas programadas,
-/// intercambio con las empresas simuladas y avance de homologación. No tiene autenticación: el simulador es para
-/// desarrollo y CI. Su especificación OpenAPI está en <c>/openapi/v1.json</c>.
+/// intercambio con las empresas simuladas y avance de homologación. Por defecto no tiene autenticación, porque el
+/// simulador es para desarrollo y CI; <see cref="OpcionesSimulador.ClaveAdmin"/> la exige (<see cref="Acceso"/>). Su
+/// especificación OpenAPI está en <c>/openapi/v1.json</c>.
 /// </summary>
 internal static class AdminApi
 {
     internal static void Mapear(WebApplication app)
     {
-        var admin = app.MapGroup("/admin");
+        var admin = app.MapGroup("/admin").AddEndpointFilter(Acceso.Exigir);
         admin.MapGet("/", Pagina.Inicio).ExcludeFromDescription();
         admin.MapGet("/ca.pem", (Autoridad a) => Results.Text(a.Ca.ExportCertificatePem(), "application/x-pem-file"))
             .WithTags("Certificados").WithSummary("Certificado de la CA de prueba, para confiar en los certificados y acuses del simulador")
@@ -116,7 +117,10 @@ internal static class AdminApi
         var certificados = admin.MapGroup("/certificados").WithTags("Certificados");
         certificados.MapGet("/", (Almacen a) => a.Certificados().Select(c => new CertificadoRegistrado(c.Huella, c.Rut, c.Raiz, c.ConClave)))
             .WithSummary("Certificados registrados");
-        certificados.MapPost("/", (NuevoCertificado nuevo, Administracion adm) => Ejecutar(() => Results.Ok(new CertificadoImportado(adm.ImportarCertificado(nuevo)))))
+        // `archivo` lee del disco del simulador: solo vale en la semilla, que escribe quien lo opera.
+        certificados.MapPost("/", (NuevoCertificado nuevo, Administracion adm) => nuevo.Archivo is not null
+            ? Results.BadRequest(new ErrorAdmin("'archivo' solo se admite en la semilla: mande el certificado en 'pem' o 'base64'."))
+            : Ejecutar(() => Results.Ok(new CertificadoImportado(adm.ImportarCertificado(nuevo)))))
             .WithSummary("Importa un certificado propio, o una CA de confianza con `raiz`")
             .Produces<CertificadoImportado>().Produces<ErrorAdmin>(StatusCodes.Status400BadRequest);
 
