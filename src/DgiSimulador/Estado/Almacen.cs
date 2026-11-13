@@ -188,6 +188,11 @@ public sealed class Almacen
         "SELECT * FROM cfes WHERE rut = $rut AND tipo = $t AND serie = $s AND nro = $n ORDER BY id DESC LIMIT 1", LeerCfe,
         ("$rut", rut), ("$t", tipo), ("$s", serie), ("$n", nro));
 
+    /// <summary>El registro del CFE en el primer sobre en que llegó.</summary>
+    public CfeRegistrado? PrimerCfe(string rut, int tipo, string serie, long nro) => Uno(
+        "SELECT * FROM cfes WHERE rut = $rut AND tipo = $t AND serie = $s AND nro = $n ORDER BY id LIMIT 1", LeerCfe,
+        ("$rut", rut), ("$t", tipo), ("$s", serie), ("$n", nro));
+
     /// <summary>El primer registro aceptado (AE o CE) del CFE, que es el que vale.</summary>
     public CfeRegistrado? CfeAceptado(string rut, int tipo, string serie, long nro) => Uno(
         "SELECT * FROM cfes WHERE rut = $rut AND tipo = $t AND serie = $s AND nro = $n AND estado IN ('AE', 'CE') ORDER BY id LIMIT 1", LeerCfe,

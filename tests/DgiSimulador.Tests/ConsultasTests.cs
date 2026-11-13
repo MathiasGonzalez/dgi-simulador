@@ -20,6 +20,32 @@ public sealed class ConsultasTests(Simulador sim) : IClassFixture<Simulador>
     private static string Parametros(string elemento, params (string Nombre, string Valor)[] campos) =>
         $"<dgi:{elemento} xmlns:dgi=\"{Ns.Dgi}\">" + string.Concat(campos.Select(c => $"<dgi:{c.Nombre}>{c.Valor}</dgi:{c.Nombre}>")) + $"</dgi:{elemento}>";
 
+    private static string Desde => Hora.Formato(EmisorPrueba.Hoy.AddDays(-1)) + "T00:00:00";
+    private static string Hasta => Hora.Formato(EmisorPrueba.Hoy.AddDays(1)) + "T23:59:59";
+
+    [Theory]
+    [InlineData("EFACCONSULTARCFERECIBIDOS", "Consultacferecibidos", "2026-01-01T00:00:00", "2026-02-02T00:00:00", "31 días")]
+    [InlineData("EFACCONSULTARENVIOSSOBRE", "Consultaenviossobre", "2026-01-01T00:00:00", "2026-03-01T00:00:00", "31 días")]
+    [InlineData("EFACCONSULTARCFERECIBIDOS", "Consultacferecibidos", "2011-09-30T00:00:00", "2011-10-05T00:00:00", "período")]
+    [InlineData("EFACCONSULTARENVIOSSOBRE", "Consultaenviossobre", "2050-12-30T00:00:00", "2051-01-01T00:00:00", "período")]
+    [InlineData("EFACCONSULTARENVIOSSOBRE", "Consultaenviossobre", "", "", "FechaDesde y FechaHasta")]
+    public async Task RangoDeFechasFueraDeLosLimites_EsSoapFault(string operacion, string elemento, string desde, string hasta, string texto)
+    {
+        var emisor = await sim.Emisor();
+        var (respuesta, soap) = await Consultar(emisor, operacion, Parametros(elemento, ("FechaDesde", desde), ("FechaHasta", hasta)));
+        Assert.False(respuesta.IsSuccessStatusCode);
+        Assert.Contains(texto, soap.Buscar("faultstring")!.InnerText);
+    }
+
+    [Fact]
+    public async Task Padron_ElFiltroDeRucEsParcial()
+    {
+        var emisor = await sim.Emisor();
+        var (_, soap) = await Consultar(emisor, "EFACCONSULTARRUCEMISORES",
+            Parametros("Consultarucemisores", ("Filtro_eFacDocNro", emisor.Rut[2..10]), ("Filtro_eFacDenominacion", ""), ("Filtro_eFacRUCEmisorAudFchHora", "2000-01-01T00:00:00")));
+        Assert.Contains(soap.BuscarTodos("RucEmisoresMail.RucEmisoresMailItem"), i => i.Texto("RUC") == emisor.Rut);
+    }
+
     [Fact]
     public async Task EstadoCfe_DevuelveElEstadoYLosParametrosDelSobre()
     {
@@ -79,7 +105,7 @@ public sealed class ConsultasTests(Simulador sim) : IClassFixture<Simulador>
         await sim.Enviar(proveedor, proveedor.Firmar(cfe));
 
         var (_, soap) = await Consultar(receptor, "EFACCONSULTARCFERECIBIDOS", Parametros("Consultacferecibidos",
-            ("RUCEmisor", "0"), ("TipoCFE", "0"), ("Serie", " "), ("Nro", "0"), ("FechaDesde", "2000-01-01T00:00:00"), ("FechaHasta", "2050-12-31T23:59:59")));
+            ("RUCEmisor", "0"), ("TipoCFE", "0"), ("Serie", " "), ("Nro", "0"), ("FechaDesde", Desde), ("FechaHasta", Hasta)));
         var datos = Assert.Single(soap.BuscarTodos("DatosCFE"));
         Assert.Equal(proveedor.Rut, datos.Texto("RucEmisor"));
         Assert.Equal("AE", datos.Texto("Estado"));
@@ -95,7 +121,7 @@ public sealed class ConsultasTests(Simulador sim) : IClassFixture<Simulador>
         await sim.EnviarReporte(emisor.Certificado, ReportesPrueba.Armar(emisor, EmisorPrueba.Hoy, 1, [new ZonaPrueba(101, "A", 1, 1, 100m)]));
 
         var (_, sobres) = await Consultar(emisor, "EFACCONSULTARENVIOSSOBRE", Parametros("Consultaenviossobre",
-            ("IdEmisor", "0"), ("IdReceptor", acuse.Buscar("IDReceptor")!.InnerText), ("FechaDesde", "2000-01-01T00:00:00"), ("FechaHasta", "2050-01-01T00:00:00")));
+            ("IdEmisor", "0"), ("IdReceptor", acuse.Buscar("IDReceptor")!.InnerText), ("FechaDesde", Desde), ("FechaHasta", Hasta)));
         Assert.Equal("AS", Assert.Single(sobres.BuscarTodos("DatosSobre")).Texto("EstadoSobre"));
 
         var (_, envios) = await Consultar(emisor, "EFACCONSULTARENVIOSCFE", Parametros("Cfeid", ("TipoCFE", "101"), ("Serie", "A"), ("Nro", "1")));
