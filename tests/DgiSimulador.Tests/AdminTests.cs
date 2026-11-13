@@ -61,6 +61,15 @@ public sealed class AdminTests(Simulador sim) : IClassFixture<Simulador>
     }
 
     [Fact]
+    public async Task UnCertificadoPorArchivoSoloSeAdmiteEnLaSemilla()
+    {
+        using var http = sim.CreateClient();
+        var respuesta = await http.PostAsJsonAsync("/admin/certificados", new { archivo = "/etc/ssl/cert.pem" });
+        Assert.Equal(HttpStatusCode.BadRequest, respuesta.StatusCode);
+        Assert.Contains("solo se admite en la semilla", (await respuesta.Content.ReadFromJsonAsync<JsonElement>()).GetProperty("error").GetString());
+    }
+
+    [Fact]
     public async Task LaSaludRespondeConLaVersionDelProyecto()
     {
         using var http = sim.CreateClient();
@@ -82,5 +91,53 @@ public sealed class SemillaDeEjemploTests(SimuladorConSemillaDeEjemplo sim) : IC
         Assert.True(sim.Almacen.Emisor("217654330015")!.Simulado);
         Assert.NotNull(sim.Almacen.PfxDe("211234560019"));
         Assert.Equal([101, 102, 103, 111, 112, 113, 181, 182, 201], sim.Almacen.Caes("211234560019").Select(c => c.Tipo).Order());
+    }
+}
+
+/// <summary>El simulador con clave de administración.</summary>
+public sealed class SimuladorConClave() : Simulador(new() { ["Simulador:ClaveAdmin"] = Clave })
+{
+    internal const string Clave = "una-clave-de-prueba";
+}
+
+/// <summary>Con <c>Simulador:ClaveAdmin</c>, <c>/admin</c> exige la clave; la salud y los servicios SOAP no.</summary>
+public sealed class ClaveDeAdministracionTests(SimuladorConClave sim) : IClassFixture<SimuladorConClave>
+{
+    private async Task<HttpResponseMessage> Pedir(string ruta, string? autorizacion)
+    {
+        using var http = sim.CreateClient();
+        using var pedido = new HttpRequestMessage(HttpMethod.Get, ruta);
+        if (autorizacion is not null)
+            pedido.Headers.TryAddWithoutValidation("Authorization", autorizacion);
+        return await http.SendAsync(pedido);
+    }
+
+    [Fact]
+    public async Task SinClaveOConOtra_Responde401YPideBasic()
+    {
+        foreach (var autorizacion in new[] { null, "Bearer otra", "Basic no-es-base64", "Basic " + Convert.ToBase64String("admin:otra"u8) })
+        {
+            var respuesta = await Pedir("/admin/emisores", autorizacion);
+            Assert.Equal(HttpStatusCode.Unauthorized, respuesta.StatusCode);
+            Assert.StartsWith("Basic", respuesta.Headers.WwwAuthenticate.ToString());
+        }
+        Assert.Equal(HttpStatusCode.Unauthorized, (await Pedir("/admin", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.Unauthorized, (await Pedir("/admin/ca.pem", null)).StatusCode);
+    }
+
+    [Fact]
+    public async Task ConLaClave_PorBearerOPorBasic()
+    {
+        Assert.Equal(HttpStatusCode.OK, (await Pedir("/admin/emisores", "Bearer " + SimuladorConClave.Clave)).StatusCode);
+        var basic = "Basic " + Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes("cualquiera:" + SimuladorConClave.Clave));
+        Assert.Equal(HttpStatusCode.OK, (await Pedir("/admin", basic)).StatusCode);
+    }
+
+    [Fact]
+    public async Task LaSaludElContratoYLosWsdlSiguenAbiertos()
+    {
+        Assert.Equal(HttpStatusCode.OK, (await Pedir("/salud", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await Pedir("/openapi/v1.json", null)).StatusCode);
+        Assert.Equal(HttpStatusCode.OK, (await Pedir("/ePrueba/ws_eprueba?wsdl", null)).StatusCode);
     }
 }

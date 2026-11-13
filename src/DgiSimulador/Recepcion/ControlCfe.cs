@@ -170,8 +170,6 @@ internal sealed class ControlCfe(Almacen almacen, Autoridad autoridad, IOptions<
         var datos = cfe.ComplFiscal.Hijo("Compl_Fiscal_Data");
         if (datos?.Texto("RUCEmisor") is { } rut && rut != cfe.RutEmisor)
             h.Add(new("E08", $"Compl_Fiscal informa el RUC {rut} y el emisor del CFE es {cfe.RutEmisor}."));
-        if (cfe.Tipo is { } tipo && TiposCfe.EsCuentaAjena(tipo) && cfe.ComplFiscal is null)
-            h.Add(new("E05", "Los comprobantes de venta por cuenta ajena requieren el complemento fiscal (Compl_Fiscal) con el mandante."));
     }
 
     private void Referencias(CfeLeido cfe, ContextoSobre contexto, List<Hallazgo> h)

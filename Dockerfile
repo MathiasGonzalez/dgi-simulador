@@ -16,6 +16,7 @@ COPY --from=build /app .
 # El estado (SQLite y las claves de la CA de prueba) vive en un volumen.
 RUN mkdir -p /datos && chown $APP_UID /datos
 USER $APP_UID
+# Dentro del contenedor escucha en todas las interfaces; quién llega lo decide el `-p` de quien lo corre (SECURITY.md).
 ENV Simulador__Datos=/datos \
     Urls=http://0.0.0.0:8080
 VOLUME /datos
