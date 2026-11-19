@@ -41,14 +41,15 @@ internal sealed class ServicioConsultas(Almacen almacen, Autoridad autoridad, Ti
     }
 
     /// <summary>
-    /// El estado de un CFE del consultante y los parámetros para consultar el sobre en que llegó. <c>EstadoCFE</c> es el
-    /// resultado del comprobante (AE, BE o CE): el formato no lo define.
+    /// El estado de un CFE del consultante y los parámetros para consultar el primer sobre en que llegó. <c>EstadoCFE</c>
+    /// es el resultado del comprobante (AE, BE o CE): el del envío aceptado si lo hay y, si no, el del último.
     /// </summary>
     private string EstadoCfe(PeticionSoap pedido, string rut, XmlElement? cfeid)
     {
         var (tipo, serie, nro) = IdCfe(cfeid);
-        var cfe = almacen.Cfe(rut, tipo, serie, nro) ?? throw new FaultSoap($"La DGI no tiene el CFE {tipo} {serie}{nro} del RUT {rut}.");
-        var sobre = almacen.Sobre(cfe.IdReceptor)!;
+        var primero = almacen.PrimerCfe(rut, tipo, serie, nro) ?? throw new FaultSoap($"La DGI no tiene el CFE {tipo} {serie}{nro} del RUT {rut}.");
+        var cfe = almacen.CfeAceptado(rut, tipo, serie, nro) ?? almacen.Cfe(rut, tipo, serie, nro)!;
+        var sobre = almacen.Sobre(primero.IdReceptor)!;
         return MensajeSoap.Respuesta(pedido, w =>
         {
             w.WriteStartElement("Ackconsultaestadocfe", Ns.Dgi);
@@ -67,6 +68,25 @@ internal sealed class ServicioConsultas(Almacen almacen, Autoridad autoridad, Ti
         return ((int)tipo, serie, nro);
     }
 
+    private static readonly DateTimeOffset InicioDelPeriodo = new(2011, 10, 1, 0, 0, 0, Hora.Offset);
+    private static readonly DateTimeOffset FinDelPeriodo = new(2051, 1, 1, 0, 0, 0, Hora.Offset);
+
+    /// <summary>
+    /// <c>FechaDesde</c> y <c>FechaHasta</c> de una consulta: obligatorias, del período 01/10/2011 al 31/12/2050 y con
+    /// 31 días como máximo entre las dos. El documento de consultas fija los límites y no dice qué se responde al
+    /// pasarlos: el simulador responde un SOAP Fault.
+    /// </summary>
+    private static (DateTimeOffset Desde, DateTimeOffset Hasta) Rango(XmlElement? consulta, string elemento)
+    {
+        if (Hora.Leer(consulta.Texto("FechaDesde")) is not { } desde || Hora.Leer(consulta.Texto("FechaHasta")) is not { } hasta)
+            throw new FaultSoap($"{elemento} tiene que tener FechaDesde y FechaHasta.");
+        if (desde < InicioDelPeriodo || hasta < InicioDelPeriodo || desde >= FinDelPeriodo || hasta >= FinDelPeriodo)
+            throw new FaultSoap("FechaDesde y FechaHasta deben pertenecer al período 01/10/2011 al 31/12/2050.");
+        if (hasta - desde > TimeSpan.FromDays(31))
+            throw new FaultSoap("El rango de fechas no debe superar los 31 días.");
+        return (desde, hasta);
+    }
+
     private static void ParamConsulta(XmlWriter w, SobreRecibido sobre)
     {
         w.WriteStartElement("ParamConsulta", Ns.Dgi);
@@ -77,13 +97,17 @@ internal sealed class ServicioConsultas(Almacen almacen, Autoridad autoridad, Ti
 
     // --- Padrón -------------------------------------------------------------------------------
 
+    /// <summary>
+    /// Los emisores cuyo RUC y cuya denominación contienen a los filtros (en blanco no filtran) y que existen o cambiaron
+    /// desde la fecha indicada.
+    /// </summary>
     private IEnumerable<Emisor> Filtrar(XmlElement? consulta)
     {
         var documento = consulta.Texto("Filtro_eFacDocNro");
         var denominacion = consulta.Texto("Filtro_eFacDenominacion");
         var desde = Hora.Leer(consulta.Texto("Filtro_eFacRUCEmisorAudFchHora"));
         return almacen.Emisores().Where(e =>
-            (string.IsNullOrEmpty(documento) || documento == "0" || e.Rut == documento)
+            (string.IsNullOrEmpty(documento) || documento == "0" || e.Rut.Contains(documento, StringComparison.Ordinal))
             && (string.IsNullOrEmpty(denominacion) || e.Denominacion.Contains(denominacion, StringComparison.OrdinalIgnoreCase))
             && (desde is null || e.Modificado >= desde));
     }
@@ -149,7 +173,7 @@ internal sealed class ServicioConsultas(Almacen almacen, Autoridad autoridad, Ti
 
     /// <summary>
     /// Los CFE que otros emisores enviaron a la DGI con el consultante como receptor (RUC). Los filtros en 0 o en blanco
-    /// no filtran; las fechas son las de recepción en la DGI.
+    /// no filtran; el rango es de fechas de emisión del CFE.
     /// </summary>
     private string CfeRecibidos(PeticionSoap pedido, string rut, XmlElement? consulta)
     {
@@ -157,15 +181,14 @@ internal sealed class ServicioConsultas(Almacen almacen, Autoridad autoridad, Ti
         var tipo = XmlUtil.Entero(consulta.Texto("TipoCFE")) ?? 0;
         var serie = consulta.Texto("Serie");
         var nro = XmlUtil.Entero(consulta.Texto("Nro")) ?? 0;
-        var desde = Hora.Leer(consulta.Texto("FechaDesde"));
-        var hasta = Hora.Leer(consulta.Texto("FechaHasta"));
+        var (desde, hasta) = Rango(consulta, "Consultacferecibidos");
+        var (primerDia, ultimoDia) = (Hora.Fecha(desde), Hora.Fecha(hasta));
         var cfes = almacen.CfesParaReceptor(rut).Where(c =>
             (string.IsNullOrEmpty(emisor) || emisor == "0" || c.Rut == emisor)
             && (tipo == 0 || c.Tipo == tipo)
             && (string.IsNullOrWhiteSpace(serie) || c.Serie == serie)
             && (nro == 0 || c.Nro == nro)
-            && (desde is null || c.Recibido >= desde)
-            && (hasta is null || c.Recibido <= hasta));
+            && (c.Fecha is { } emision ? emision >= primerDia && emision <= ultimoDia : c.Recibido >= desde && c.Recibido <= hasta));
         return MensajeSoap.Respuesta(pedido, w =>
         {
             w.WriteStartElement("Ackconsultacferecibidos", Ns.Dgi);
@@ -195,11 +218,10 @@ internal sealed class ServicioConsultas(Almacen almacen, Autoridad autoridad, Ti
     {
         var idEmisor = XmlUtil.Entero(consulta.Texto("IdEmisor")) ?? 0;
         var idReceptor = XmlUtil.Entero(consulta.Texto("IdReceptor")) ?? 0;
-        var desde = Hora.Leer(consulta.Texto("FechaDesde"));
-        var hasta = Hora.Leer(consulta.Texto("FechaHasta"));
+        var (desde, hasta) = Rango(consulta, "Consultaenviossobre");
         var sobres = almacen.Sobres(rut, limite: 10_000).Where(s =>
             (idEmisor == 0 || s.IdEmisor == idEmisor) && (idReceptor == 0 || s.IdReceptor == idReceptor)
-            && (desde is null || s.Recibido >= desde) && (hasta is null || s.Recibido <= hasta)).OrderBy(s => s.IdReceptor);
+            && s.Recibido >= desde && s.Recibido <= hasta).OrderBy(s => s.IdReceptor);
         return MensajeSoap.Respuesta(pedido, w => DatosSobres(w, "Ackconsultaenviossobre", "ColeccionDatosSobre", sobres));
     }
 
